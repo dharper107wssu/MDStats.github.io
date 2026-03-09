@@ -1,0 +1,1580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EPPP Statistics & Research Design — Group Study</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #07090f;
+    --surface: #0d1117;
+    --card: #111827;
+    --card2: #161e2e;
+    --border: rgba(148,163,184,0.1);
+    --border2: rgba(148,163,184,0.18);
+    --indigo: #818cf8;
+    --violet: #a78bfa;
+    --sky: #38bdf8;
+    --teal: #2dd4bf;
+    --amber: #fbbf24;
+    --rose: #fb7185;
+    --emerald: #34d399;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --muted2: #94a3b8;
+    --correct: #22c55e;
+    --wrong: #ef4444;
+    --grid: rgba(148,163,184,0.04);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px),
+      radial-gradient(ellipse at 15% 20%, rgba(129,140,248,0.07) 0%, transparent 55%),
+      radial-gradient(ellipse at 85% 80%, rgba(167,139,250,0.06) 0%, transparent 55%);
+    background-size: 32px 32px, 32px 32px, 100% 100%, 100% 100%;
+  }
+
+  /* ─── LOBBY ─── */
+  #lobbyScreen {
+    display: flex; align-items: center; justify-content: center;
+    min-height: 100vh; padding: 20px;
+  }
+  .lobby-wrap {
+    max-width: 560px; width: 100%;
+  }
+  .lobby-eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem; color: var(--indigo); letter-spacing: 0.15em;
+    text-transform: uppercase; margin-bottom: 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .lobby-eyebrow::before {
+    content: ''; display: inline-block; width: 24px; height: 1px;
+    background: var(--indigo);
+  }
+  .lobby-title {
+    font-family: 'Syne', sans-serif; font-size: 2.4rem; font-weight: 800;
+    line-height: 1.1; margin-bottom: 6px;
+    background: linear-gradient(135deg, #e2e8f0 0%, #818cf8 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .lobby-sub {
+    color: var(--muted2); font-size: 0.88rem; margin-bottom: 36px; line-height: 1.6;
+  }
+  .lobby-card {
+    background: var(--card); border: 1px solid var(--border2);
+    border-radius: 16px; padding: 32px;
+    box-shadow: 0 0 0 1px rgba(129,140,248,0.05), 0 24px 48px rgba(0,0,0,0.6);
+  }
+  .field-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem; color: var(--indigo); letter-spacing: 0.12em;
+    text-transform: uppercase; margin-bottom: 8px;
+  }
+  .field-row { margin-bottom: 20px; }
+  .text-input {
+    width: 100%; background: var(--surface); border: 1px solid var(--border2);
+    border-radius: 8px; padding: 11px 14px; color: var(--text);
+    font-family: 'DM Sans', sans-serif; font-size: 0.93rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .text-input:focus {
+    outline: none; border-color: var(--indigo);
+    box-shadow: 0 0 0 3px rgba(129,140,248,0.1);
+  }
+  .count-row { display: flex; gap: 8px; }
+  .count-btn {
+    flex: 1; padding: 11px; background: var(--surface); border: 1px solid var(--border2);
+    border-radius: 8px; color: var(--muted2); cursor: pointer;
+    font-family: 'IBM Plex Mono', monospace; font-size: 1rem; font-weight: 600;
+    transition: all 0.18s;
+  }
+  .count-btn.active {
+    background: rgba(129,140,248,0.12); border-color: var(--indigo); color: var(--indigo);
+    box-shadow: 0 0 0 3px rgba(129,140,248,0.08);
+  }
+  .session-row { display: flex; gap: 8px; align-items: flex-end; }
+  .session-row .text-input { flex: 1; font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.06em; }
+  .gen-btn {
+    background: var(--surface); border: 1px solid var(--border2);
+    border-radius: 8px; padding: 11px 13px; cursor: pointer; color: var(--muted2);
+    font-size: 0.75rem; font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.05em;
+    transition: all 0.18s; white-space: nowrap;
+  }
+  .gen-btn:hover { border-color: var(--sky); color: var(--sky); }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+  .big-btn {
+    width: 100%; padding: 14px; border-radius: 10px; border: none;
+    background: linear-gradient(135deg, var(--indigo), #6366f1);
+    color: #fff; font-family: 'Syne', sans-serif;
+    font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: all 0.2s;
+    letter-spacing: 0.03em; margin-top: 4px;
+  }
+  .big-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(129,140,248,0.35); }
+  .big-btn:disabled { opacity: 0.35; cursor: default; transform: none; box-shadow: none; }
+
+  /* ─── HEADER ─── */
+  header {
+    background: rgba(13,17,23,0.95); border-bottom: 1px solid var(--border2);
+    padding: 0 28px; height: 56px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 50;
+    backdrop-filter: blur(10px);
+  }
+  .hdr-left { display: flex; align-items: center; gap: 14px; }
+  .hdr-logo {
+    font-family: 'Syne', sans-serif; font-weight: 800; font-size: 0.9rem;
+    color: var(--indigo); letter-spacing: 0.02em;
+  }
+  .hdr-sep { width: 1px; height: 20px; background: var(--border2); }
+  .hdr-subtitle { font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; color: var(--muted); letter-spacing: 0.06em; }
+  .hdr-right { display: flex; gap: 10px; align-items: center; }
+  .hdr-chip {
+    font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem;
+    background: rgba(129,140,248,0.07); border: 1px solid rgba(129,140,248,0.2);
+    color: var(--indigo); padding: 4px 10px; border-radius: 4px;
+    letter-spacing: 0.05em;
+  }
+  .hdr-chip b { color: #e2e8f0; }
+  .code-chip {
+    font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem;
+    background: rgba(56,189,248,0.07); border: 1px solid rgba(56,189,248,0.2);
+    color: var(--sky); padding: 4px 10px; border-radius: 4px;
+    letter-spacing: 0.08em; cursor: pointer; transition: all 0.18s;
+  }
+  .code-chip:hover { background: rgba(56,189,248,0.13); }
+
+  /* ─── PROGRESS ─── */
+  .progress-track { height: 3px; background: rgba(255,255,255,0.04); position: relative; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--indigo), var(--teal)); transition: width 0.5s cubic-bezier(.4,0,.2,1); }
+  .progress-labels { display: flex; justify-content: space-between; padding: 4px 28px; }
+  .prog-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.62rem; color: var(--muted); letter-spacing: 0.06em; }
+
+  /* ─── LAYOUT ─── */
+  .quiz-layout { display: grid; grid-template-columns: 1fr 270px; max-width: 1160px; margin: 0 auto; }
+  .quiz-main { padding: 28px 24px 80px; }
+  .quiz-sidebar {
+    border-left: 1px solid var(--border); padding: 22px 18px;
+    position: sticky; top: 56px; height: calc(100vh - 56px); overflow-y: auto;
+  }
+
+  /* ─── QUESTION CARD ─── */
+  .q-card {
+    background: var(--card); border: 1px solid var(--border2);
+    border-radius: 12px; padding: 28px 30px;
+    animation: cardIn 0.3s cubic-bezier(.4,0,.2,1);
+    position: relative; overflow: hidden;
+  }
+  .q-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--indigo), var(--violet), transparent);
+  }
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .q-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+  .q-num { font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; color: var(--indigo); letter-spacing: 0.12em; text-transform: uppercase; }
+  .q-tag {
+    font-family: 'IBM Plex Mono', monospace; font-size: 0.64rem;
+    background: rgba(129,140,248,0.08); border: 1px solid rgba(129,140,248,0.2);
+    color: var(--indigo); padding: 3px 9px; border-radius: 3px; letter-spacing: 0.06em;
+  }
+  .q-text { font-size: 0.97rem; line-height: 1.8; margin-bottom: 22px; color: var(--text); }
+
+  /* ─── OPTIONS ─── */
+  .options { display: flex; flex-direction: column; gap: 8px; }
+  .opt-btn {
+    background: rgba(255,255,255,0.025); border: 1px solid rgba(148,163,184,0.1);
+    border-radius: 8px; padding: 12px 15px;
+    display: flex; gap: 12px; align-items: flex-start;
+    cursor: pointer; text-align: left; color: var(--text);
+    font-family: 'DM Sans', sans-serif; font-size: 0.9rem; line-height: 1.55;
+    transition: all 0.18s; width: 100%;
+  }
+  .opt-btn:hover:not(:disabled) {
+    background: rgba(129,140,248,0.06); border-color: rgba(129,140,248,0.25);
+    transform: translateX(3px);
+  }
+  .opt-btn:disabled { cursor: default; }
+  .opt-btn.selected-mine {
+    background: rgba(56,189,248,0.08); border-color: var(--sky);
+    box-shadow: 0 0 0 2px rgba(56,189,248,0.08);
+  }
+  .opt-btn.correct {
+    background: rgba(34,197,94,0.08); border-color: var(--correct);
+    box-shadow: 0 0 0 2px rgba(34,197,94,0.06);
+  }
+  .opt-btn.wrong {
+    background: rgba(239,68,68,0.07); border-color: var(--wrong);
+  }
+  .opt-btn.neutral-reveal {
+    background: rgba(255,255,255,0.03); border-color: rgba(148,163,184,0.12);
+    opacity: 0.75;
+  }
+  .opt-letter {
+    font-family: 'IBM Plex Mono', monospace; font-weight: 600;
+    color: var(--indigo); min-width: 18px; font-size: 0.82rem; padding-top: 1px;
+  }
+  .opt-btn.selected-mine .opt-letter { color: var(--sky); }
+  .opt-btn.correct .opt-letter { color: var(--correct); }
+  .opt-btn.wrong .opt-letter { color: var(--wrong); }
+  .opt-right { flex: 1; }
+  .voter-pips { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 7px; }
+  .pip {
+    width: 20px; height: 20px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.6rem; font-weight: 700; font-family: 'Syne', sans-serif;
+  }
+
+  /* ─── WAITING BAR ─── */
+  .waiting-bar {
+    margin-top: 18px; background: rgba(251,191,36,0.05);
+    border: 1px solid rgba(251,191,36,0.18); border-radius: 8px;
+    padding: 12px 16px; display: flex; justify-content: space-between; align-items: center;
+  }
+  .waiting-bar p { font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem; color: var(--amber); letter-spacing: 0.04em; }
+  .a-pips { display: flex; gap: 6px; }
+  .a-pip { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 700; font-family: 'Syne', sans-serif; }
+  .a-pip.done { opacity: 1; }
+  .a-pip.waiting { opacity: 0.25; border: 1.5px dashed; }
+
+  /* ─── FEEDBACK ─── */
+  .feedback-section { margin-top: 22px; border-top: 1px solid var(--border); padding-top: 20px; animation: fadeIn 0.4s; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .fb-grid { display: grid; gap: 10px; }
+  .fb-card {
+    border-left: 2px solid; border-radius: 0 8px 8px 0;
+    padding: 13px 15px; background: rgba(255,255,255,0.02);
+  }
+  .fb-card.expl { border-color: var(--sky); }
+  .fb-card.domain { border-color: var(--amber); }
+  .fb-card.traps { border-color: var(--rose); }
+  .fb-card.why { border-color: var(--violet); }
+  .fb-card h4 {
+    font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem;
+    font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+    margin-bottom: 8px; display: flex; gap: 6px; align-items: center;
+  }
+  .fb-card.expl h4 { color: var(--sky); }
+  .fb-card.domain h4 { color: var(--amber); }
+  .fb-card.traps h4 { color: var(--rose); }
+  .fb-card.why h4 { color: var(--violet); }
+  .fb-card p { font-size: 0.86rem; line-height: 1.7; color: #94a3b8; }
+  .ab-row {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 8px 10px; border-radius: 6px; margin-bottom: 5px; font-size: 0.83rem;
+  }
+  .ab-row.ab-correct { background: rgba(34,197,94,0.07); }
+  .ab-row.ab-wrong { background: rgba(239,68,68,0.06); }
+  .ab-letter { font-family: 'IBM Plex Mono', monospace; font-weight: 600; min-width: 22px; font-size: 0.8rem; }
+  .ab-correct .ab-letter { color: var(--correct); }
+  .ab-wrong .ab-letter { color: var(--wrong); }
+  .ab-text { color: #94a3b8; flex: 1; line-height: 1.5; }
+  .ab-verdict {
+    font-family: 'IBM Plex Mono', monospace; font-size: 0.64rem;
+    font-weight: 600; padding: 2px 7px; border-radius: 3px; white-space: nowrap;
+    margin-left: auto; letter-spacing: 0.06em; align-self: flex-start; margin-top: 2px;
+  }
+  .ab-correct .ab-verdict { background: rgba(34,197,94,0.12); color: var(--correct); }
+  .ab-wrong .ab-verdict { background: rgba(239,68,68,0.1); color: var(--wrong); }
+
+  /* ─── NAV ─── */
+  .nav-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--border);
+  }
+  .nav-btn {
+    background: rgba(255,255,255,0.04); border: 1px solid var(--border2);
+    color: var(--muted2); font-family: 'DM Sans', sans-serif; font-size: 0.85rem;
+    padding: 8px 18px; border-radius: 6px; cursor: pointer; transition: all 0.18s;
+  }
+  .nav-btn:hover:not(:disabled) { border-color: var(--indigo); color: var(--indigo); }
+  .nav-btn:disabled { opacity: 0.25; cursor: default; }
+  .nav-btn.primary {
+    background: linear-gradient(135deg, var(--indigo), #6366f1);
+    border: none; color: #fff; font-weight: 600; font-family: 'Syne', sans-serif;
+  }
+  .nav-btn.primary:hover:not(:disabled) {
+    transform: translateY(-1px); box-shadow: 0 4px 14px rgba(129,140,248,0.35);
+    color: #fff;
+  }
+  .nav-pos { font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: var(--muted); letter-spacing: 0.06em; }
+
+  /* ─── SIDEBAR ─── */
+  .sb-section { margin-bottom: 22px; }
+  .sb-title {
+    font-family: 'IBM Plex Mono', monospace; font-size: 0.62rem; font-weight: 600;
+    color: var(--muted); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .sb-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .player-card {
+    background: var(--card2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 9px 11px; margin-bottom: 7px;
+    display: flex; align-items: center; gap: 9px;
+  }
+  .player-avatar {
+    width: 30px; height: 30px; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.82rem; flex-shrink: 0;
+  }
+  .player-name { font-size: 0.85rem; font-weight: 500; }
+  .player-sub { font-family: 'IBM Plex Mono', monospace; font-size: 0.62rem; color: var(--muted); }
+  .player-score { margin-left: auto; font-family: 'IBM Plex Mono', monospace; font-size: 0.88rem; font-weight: 600; color: var(--teal); }
+  .dot-grid { display: flex; flex-wrap: wrap; gap: 4px; }
+  .mini-dot {
+    width: 22px; height: 22px; border-radius: 4px; border: 1px solid rgba(148,163,184,0.12);
+    background: transparent; cursor: pointer; font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.55rem; color: var(--muted); display: flex; align-items: center;
+    justify-content: center; transition: all 0.15s;
+  }
+  .mini-dot:hover { border-color: var(--indigo); color: var(--indigo); }
+  .mini-dot.mc { border-color: var(--indigo); box-shadow: 0 0 0 2px rgba(129,140,248,0.15); color: var(--indigo); }
+  .mini-dot.ac { background: rgba(34,197,94,0.15); border-color: var(--correct); color: var(--correct); }
+  .mini-dot.aw { background: rgba(239,68,68,0.12); border-color: var(--wrong); color: var(--wrong); }
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+  .stat-cell {
+    background: var(--card2); border: 1px solid var(--border); border-radius: 8px;
+    padding: 10px 12px;
+  }
+  .stat-val { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800; color: var(--indigo); }
+  .stat-key { font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 2px; }
+
+  /* ─── RESULTS ─── */
+  #resultsScreen { display: none; max-width: 720px; margin: 50px auto; padding: 0 20px 80px; }
+  .results-eyebrow {
+    font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: var(--indigo);
+    letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 8px; text-align: center;
+  }
+  .results-title {
+    font-family: 'Syne', sans-serif; font-size: 2.2rem; font-weight: 800;
+    text-align: center; margin-bottom: 36px;
+    background: linear-gradient(135deg, #e2e8f0, var(--indigo));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .result-card {
+    background: var(--card); border: 1px solid var(--border2);
+    border-radius: 12px; padding: 20px 24px; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 16px;
+    position: relative; overflow: hidden;
+  }
+  .result-card::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 3px;
+  }
+  .result-card.r1::before { background: var(--amber); }
+  .result-card.r2::before { background: var(--muted2); }
+  .result-card.r3::before { background: #b45309; }
+  .result-card.r4::before { background: var(--muted); }
+  .result-avatar { width: 44px; height: 44px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; flex-shrink: 0; }
+  .result-name { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; }
+  .result-sub { font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; color: var(--muted); margin-top: 3px; }
+  .result-pct { margin-left: auto; font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; }
+  .r1 .result-pct { color: var(--amber); }
+  .r2 .result-pct { color: var(--muted2); }
+  .r3 .result-pct { color: #b45309; }
+  .r4 .result-pct { color: var(--muted); }
+
+  /* ─── TOAST ─── */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: var(--card); border: 1px solid var(--border2); border-radius: 8px;
+    padding: 10px 18px; font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem;
+    color: var(--sky); letter-spacing: 0.04em; transition: transform 0.3s; z-index: 300;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  .loading { text-align: center; padding: 60px; color: var(--muted); font-family: 'IBM Plex Mono', monospace; font-size: 0.8rem; letter-spacing: 0.1em; }
+  .spin { display: inline-block; animation: spin 1.2s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  @media (max-width: 768px) {
+    .quiz-layout { grid-template-columns: 1fr; }
+    .quiz-sidebar { display: none; }
+    .lobby-title { font-size: 1.8rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOBBY -->
+<div id="lobbyScreen">
+  <div class="lobby-wrap">
+    <div class="lobby-eyebrow">EPPP Exam Prep · Group Study</div>
+    <h1 class="lobby-title">Statistics &<br>Research Design</h1>
+    <p class="lobby-sub">50 EPPP-style questions · Up to 4 players · Reveal feedback after your group threshold is met.</p>
+
+    <div class="lobby-card">
+      <div class="field-row">
+        <div class="field-label">// your_name</div>
+        <input class="text-input" id="playerName" placeholder="Dr. Patel" maxlength="20">
+      </div>
+      <div class="field-row">
+        <div class="field-label">// session_code</div>
+        <div class="session-row">
+          <input class="text-input" id="sessionCode" placeholder="e.g. STAT77" maxlength="10" style="text-transform:uppercase;letter-spacing:0.08em">
+          <button class="gen-btn" onclick="generateCode()">GEN →</button>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field-label">// reveal_threshold</div>
+        <div class="count-row">
+          <button class="count-btn" onclick="setThreshold(1)">1</button>
+          <button class="count-btn" onclick="setThreshold(2)">2</button>
+          <button class="count-btn" onclick="setThreshold(3)">3</button>
+          <button class="count-btn" onclick="setThreshold(4)">4</button>
+        </div>
+      </div>
+      <button class="big-btn" id="startBtn" onclick="joinSession()" disabled>ENTER SESSION →</button>
+      <p style="font-size:0.72rem;color:var(--muted);text-align:center;margin-top:12px;font-family:'IBM Plex Mono',monospace;letter-spacing:0.04em">All players use the same session code. First player sets the threshold.</p>
+    </div>
+  </div>
+</div>
+
+<!-- WAITING ROOM -->
+<div id="waitingRoom" style="display:none">
+  <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px">
+    <div style="max-width:480px;width:100%;text-align:center">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:0.7rem;color:var(--indigo);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:12px">// session_active</div>
+      <h2 style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;margin-bottom:6px;background:linear-gradient(135deg,#e2e8f0,var(--indigo));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Waiting Room</h2>
+      <p style="color:var(--muted2);font-size:0.88rem;margin-bottom:28px">Share the session code. Start when your group is ready.</p>
+
+      <div style="background:var(--card);border:1px solid var(--border2);border-radius:12px;padding:20px 24px;margin-bottom:20px">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:0.65rem;color:var(--muted);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px">Session Code</div>
+        <div id="wr_code" style="font-family:'IBM Plex Mono',monospace;font-size:2.4rem;font-weight:600;color:var(--indigo);letter-spacing:0.18em;cursor:pointer" onclick="copyCode()" title="Click to copy">———</div>
+        <div style="font-size:0.72rem;color:var(--muted);margin-top:4px">Click to copy · Share with your group</div>
+      </div>
+
+      <div style="background:var(--card);border:1px solid var(--border2);border-radius:12px;padding:20px 24px;margin-bottom:20px">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:0.65rem;color:var(--muted);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:14px">Players Joined <span id="wr_count" style="color:var(--indigo)">0/4</span></div>
+        <div id="wr_players" style="display:flex;flex-direction:column;gap:8px"></div>
+      </div>
+
+      <div style="background:rgba(251,191,36,0.05);border:1px solid rgba(251,191,36,0.18);border-radius:10px;padding:12px 16px;margin-bottom:20px">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:0.72rem;color:var(--amber)">Reveal feedback after <strong id="wr_threshold">?</strong> player(s) answer each question</div>
+      </div>
+
+      <button class="big-btn" id="startQuizBtn" onclick="startQuiz()" style="max-width:300px;margin:0 auto;display:block">START QUIZ →</button>
+      <p style="font-size:0.7rem;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:10px;letter-spacing:0.04em">Any player can start — others will see questions immediately</p>
+    </div>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div id="quizScreen" style="display:none">
+  <header>
+    <div class="hdr-left">
+      <div class="hdr-logo">EPPP · Stats &amp; Research</div>
+      <div class="hdr-sep"></div>
+      <div class="hdr-subtitle" id="hdrSubtitle">Group Study Mode</div>
+    </div>
+    <div class="hdr-right">
+      <div class="hdr-chip">Q_<b id="hdrQ">01</b>/50</div>
+      <div class="hdr-chip">Score: <b id="hdrScore">0</b></div>
+      <div class="code-chip" onclick="copyCode()" title="Click to copy">📋 <span id="hdrCode"></span></div>
+    </div>
+  </header>
+  <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:2%"></div></div>
+  <div class="progress-labels">
+    <span class="prog-label" id="progLeft">Q1 / 50</span>
+    <span class="prog-label" id="progRight">2%</span>
+  </div>
+
+  <div class="quiz-layout">
+    <div class="quiz-main" id="quizMain">
+      <div class="loading"><span class="spin">◌</span><br><br>LOADING SESSION...</div>
+    </div>
+    <div class="quiz-sidebar">
+      <div class="sb-section">
+        <div class="sb-title">Players</div>
+        <div id="playerList"></div>
+      </div>
+      <div class="sb-section">
+        <div class="sb-title">Progress</div>
+        <div class="dot-grid" id="dotGrid"></div>
+      </div>
+      <div class="sb-section">
+        <div class="sb-title">My Stats</div>
+        <div class="stat-grid">
+          <div class="stat-cell"><div class="stat-val" id="sbAnswered">0</div><div class="stat-key">answered</div></div>
+          <div class="stat-cell"><div class="stat-val" id="sbCorrect">0</div><div class="stat-key">correct</div></div>
+          <div class="stat-cell"><div class="stat-val" id="sbPct">—</div><div class="stat-key">accuracy</div></div>
+          <div class="stat-cell"><div class="stat-val" id="sbLeft">50</div><div class="stat-key">remaining</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div id="resultsScreen">
+  <div class="results-eyebrow">// final_results</div>
+  <h2 class="results-title">Session Complete</h2>
+  <div id="resultsGrid"></div>
+  <div style="text-align:center;margin-top:28px">
+    <button class="nav-btn primary" onclick="location.reload()" style="padding:12px 32px">NEW SESSION →</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// 50 QUESTIONS — Statistics & Research Design
+// Verified answer distribution: A=12, B=13, C=13, D=12
+// ═══════════════════════════════════════════════════════════════
+const QUESTIONS = [
+
+// 1 — C
+{tag:"Power Analysis",text:"A researcher is planning a study examining the effect of a novel CBT protocol on GAD symptom severity. She anticipates a small-to-medium effect size (Cohen's d = 0.40) and wishes to achieve power of .80 with α = .05 (two-tailed). Using standard power tables, her required sample size per group is approximately 100. She instead recruits only 40 participants per group. Which of the following MOST accurately describes the consequences of this underpowered study?",
+options:["The probability of a Type I error increases proportionally with the reduction in sample size, because smaller samples produce wider confidence intervals that are more likely to incorrectly overlap with the null hypothesis region.",
+"The study's internal validity is compromised because small samples are more vulnerable to demand characteristics and experimenter bias, which inflate apparent treatment effects and make the null hypothesis more difficult to reject.",
+"The study has approximately 40–45% power, meaning that even if the true effect size is d = 0.40, the study has a roughly 55–60% probability of failing to detect it (Type II error), and any statistically significant results will be characterized by inflated effect size estimates (the 'winner's curse').",
+"The study has increased sensitivity because smaller samples are less affected by heteroscedasticity and non-normality violations, making the F-ratio more accurate and the null hypothesis rejection threshold more conservative."],
+answer:2,
+explanation:"With n=40 per group and d=0.40, power is approximately 40-45% — meaning a ~55-60% Type II error rate. This is a critically underpowered design. Crucially, when underpowered studies DO find significance, they systematically overestimate the true effect size (the 'winner's curse' or Type M error), because only chance-inflated samples cross the threshold. This combination — high false negative rate + inflated estimates when significant — is a major driver of the replication crisis.",
+keydomain:"Statistical power; Type II error; sample size planning; winner's curse; replication crisis; Cohen's d.",
+traps:"Option A is a common misconception — sample size affects power (Type II error probability) but does NOT increase the Type I error rate (α is fixed by the researcher). Option D is also wrong — smaller samples violate CLT assumptions more, not less.",
+whyeach:"A is wrong — reducing sample size inflates Type II error, not Type I error rate. B is wrong — internal validity threats (demand characteristics) are design issues, not a direct consequence of sample size. C is correct — ~40-45% power, high Type II error rate, and inflated effect estimates characterize this study. D is wrong — smaller samples are MORE vulnerable to violations, not less."},
+
+// 2 — A
+{tag:"Research Design",text:"A clinical researcher randomly assigns 120 participants to three treatment conditions (CBT, medication, combined) for depression. After 12 weeks, depression scores are measured using the BDI-II. The researcher wishes to determine whether mean BDI-II scores differ significantly across the three conditions. The MOST appropriate primary analysis is:",
+options:["A one-way between-subjects ANOVA, because there are three independent groups and a single continuous outcome variable, with planned post-hoc or a priori contrast analyses to examine specific between-group differences if the omnibus F is significant.",
+"Three independent-samples t-tests comparing each pair of conditions (CBT vs. medication, CBT vs. combined, medication vs. combined), because t-tests provide greater statistical power than ANOVA when testing specific hypotheses about group pairs.",
+"A chi-square test of independence, because the study involves three categorical grouping conditions and the BDI-II categorical severity classifications should be analyzed using nonparametric procedures.",
+"A repeated-measures ANOVA, because the study includes multiple assessment points (baseline and 12-week outcome) and the correlation between repeated measurements must be accounted for in the error term."],
+answer:0,
+explanation:"One-way between-subjects ANOVA is the appropriate omnibus test for comparing three independent group means on a continuous outcome. Using three separate t-tests dramatically inflates Type I error (familywise α approaches .14 with α=.05 per test), which is why ANOVA provides a single omnibus test. Post-hoc tests (Tukey, Bonferroni) or a priori contrasts are then used to examine specific differences.",
+keydomain:"One-way between-subjects ANOVA; familywise error rate; omnibus test; post-hoc comparisons; t-test vs. ANOVA.",
+traps:"Option B is a very common error — multiple t-tests inflate familywise Type I error. The reason ANOVA exists is precisely to test multiple groups without multiplying error rates. Only if there was ONE specific hypothesis about TWO groups would an independent t-test be appropriate.",
+whyeach:"A is correct — one-way between-subjects ANOVA with planned follow-up comparisons. B is wrong — multiple t-tests inflate familywise Type I error to approximately .14. C is wrong — BDI-II is continuous, not categorical; chi-square tests categorical frequency data. D is wrong — repeated-measures ANOVA is for within-subjects designs; this is a between-subjects design."},
+
+// 3 — B
+{tag:"Effect Size",text:"A researcher computes Cohen's d = 0.82 for a treatment vs. control comparison. A second researcher studying the same phenomenon reports η² = .14 from a one-way ANOVA. Assuming both studies are methodologically equivalent, which of the following interpretations is MOST accurate?",
+options:["The first study shows a larger effect because d = 0.82 > η² = .14, demonstrating that standardized mean difference measures consistently yield higher effect size estimates than proportion of variance explained measures.",
+"Both effect sizes correspond approximately to a 'large' effect under Cohen's conventional benchmarks (d ≥ 0.80; η² ≥ .14 is considered large), suggesting comparable magnitudes — the difference in values reflects the different metrics rather than different underlying effect magnitudes.",
+"The second study shows a larger effect because η² is expressed as a proportion of total variance explained, which is a more complete index of practical significance than standardized mean differences.",
+"The two effect sizes cannot be meaningfully compared because d and η² are computed from incompatible statistical models and have no mathematical relationship to each other."],
+answer:1,
+explanation:"Cohen's benchmarks: d = 0.2 (small), 0.5 (medium), 0.8 (large); η² = .01 (small), .06 (medium), .14 (large). Both d=0.82 and η²=.14 fall at the threshold for 'large' effects. Importantly, for a two-group comparison, d and √(η²/(1-η²)) × 2 are mathematically related — they are different metrics for the same underlying magnitude. These metrics are not incomparable.",
+keydomain:"Cohen's d; eta-squared; effect size benchmarks; conventions; metric comparison.",
+traps:"Option A makes a straightforward magnitude comparison across incompatible metrics — you cannot directly compare a d-value to an η²-value numerically. Option D overstates their incomparability — for two-group designs, d and η² are mathematically related.",
+whyeach:"A is wrong — directly comparing the numerical values of d and η² is invalid; they measure on different scales. B is correct — both correspond to 'large' effects under Cohen's conventions for their respective metrics. C is wrong — neither metric is universally more complete than the other; they have different uses. D is wrong — d and η² ARE mathematically related and can be converted."},
+
+// 4 — D
+{tag:"Validity",text:"An investigator develops a 20-item self-report measure of 'academic resilience' and administers it to 200 undergraduates along with established measures of academic self-efficacy, GPA, and standardized test anxiety. The correlations among these variables are used to support the new scale's validity. The pattern of HIGH correlations with self-efficacy and MODERATE-to-LOW correlations with test anxiety provides evidence for which specific type of validity?",
+options:["Content validity, because the pattern of correlations demonstrates that the item content adequately represents the entire domain of academic resilience as defined by the theoretical framework.",
+"Criterion-related validity (specifically, predictive validity), because the correlation with GPA demonstrates that the scale predicts a future academic outcome and shows discriminant properties relative to non-academic constructs.",
+"Face validity, because the correlation patterns demonstrate to the examinees that the items appear to measure what they claim to measure, increasing the likelihood of honest responding and reducing social desirability bias.",
+"Construct validity — specifically convergent validity (high correlations with theoretically related constructs like self-efficacy) and discriminant validity (lower correlations with theoretically unrelated constructs like test anxiety) — as organized within Campbell and Fiske's multitrait-multimethod framework."],
+answer:3,
+explanation:"Campbell and Fiske's MTMM framework decomposes construct validity into: (1) Convergent validity — high correlations with measures of theoretically similar constructs (self-efficacy ↔ resilience); (2) Discriminant validity — low correlations with measures of theoretically distinct constructs (test anxiety should not strongly correlate with resilience). Together these provide evidence for construct validity — the scale measures the specific construct it claims to measure.",
+keydomain:"Construct validity; convergent validity; discriminant validity; MTMM; Campbell and Fiske.",
+traps:"Content validity (A) is established through expert judgment of item representativeness, NOT through correlation patterns. Face validity (C) is the weakest form and refers to surface appearance, not empirical correlation patterns. Don't confuse the specific sub-types of construct validity.",
+whyeach:"A is wrong — content validity is established through expert review of item coverage, not empirical correlations. B is wrong — predictive validity involves correlating scores with a FUTURE criterion; this design is concurrent. C is wrong — face validity is about surface appearance to examinees, not empirical correlation patterns. D is correct — convergent + discriminant validity = construct validity per Campbell & Fiske."},
+
+// 5 — C
+{tag:"Regression",text:"A multiple regression analysis examining predictors of therapist burnout yields: R² = .38, F(4, 195) = 29.73, p < .001. The standardized regression coefficients are: caseload β = .42, supervision quality β = −.31, years of experience β = .19, work-life balance β = −.28. Which of the following interpretations is MOST statistically accurate?",
+options:["Caseload is the only significant predictor of burnout because it has the largest β coefficient; the other predictors' β values are small enough to suggest they do not independently contribute to burnout after accounting for caseload.",
+"The four predictors jointly explain 38% of the variance in therapist burnout scores, and because R² is statistically significant, each individual predictor is also guaranteed to be statistically significant with acceptable confidence intervals.",
+"The four predictors jointly explain 38% of the variance in burnout; caseload makes the largest unique contribution (β = .42), supervision quality and work-life balance show negative relationships (higher quality/balance = lower burnout), and the significance of each individual β must be evaluated separately from the omnibus F.",
+"The standardized coefficients indicate the percentage of variance each predictor uniquely explains (caseload explains 42% of burnout variance), and the sum of β² values equals R² if the predictors are uncorrelated."],
+answer:2,
+explanation:"R² = .38 means the four predictors jointly explain 38% of burnout variance. The omnibus F being significant does NOT guarantee all individual predictors are significant — each β requires its own significance test. Standardized β indicates the change in burnout (in SD units) per 1-SD change in the predictor, holding others constant. Negative β values indicate inverse relationships. β values are NOT percentages of variance.",
+keydomain:"Multiple regression; R²; standardized beta coefficients; omnibus F vs. individual predictors; interpretation.",
+traps:"Option D is a very common error — β values are NOT the percentage of variance explained. The semi-partial correlation squared (sr²) gives unique variance, not β. Option B incorrectly claims that a significant omnibus F guarantees significant individual predictors — this is false.",
+whyeach:"A is wrong — the largest β doesn't guarantee others are non-significant; all require separate evaluation. B is wrong — a significant omnibus F does NOT guarantee each β is significant. C is correct — joint R², direction of relationships from sign of β, and separate evaluation of individual coefficients. D is wrong — β is not a percentage of variance; sr² is the unique variance index."},
+
+// 6 — A
+{tag:"Internal Validity",text:"A researcher evaluates a school-based anxiety prevention program. Participating schools are matched on socioeconomic status and ethnic composition, then randomly assigned to receive the program (intervention) or a waitlist (control). Pre- and post-test anxiety scores are collected. Which of the following threats to internal validity is MOST effectively controlled by this design?",
+options:["Selection bias — the primary threat in quasi-experimental designs wherein pre-existing differences between groups may account for outcome differences — is effectively controlled through random assignment of matched schools, which distributes both measured and unmeasured confounds across conditions.",
+"Attrition (mortality) — the loss of participants differentially across conditions over the course of the study — is effectively controlled by matching schools, which ensures equivalent retention rates because matched schools have similar demographic stability.",
+"Instrumentation — systematic changes in the measurement instrument or observer behavior over time — is effectively controlled by random assignment, which distributes the error variance attributable to rater drift equally across groups.",
+"Demand characteristics — participants' awareness of the study's hypotheses leading them to alter their behavior accordingly — is effectively controlled by random assignment of schools because school-level assignment prevents individual participants from learning they are in the treatment condition."],
+answer:0,
+explanation:"The primary threat in any group comparison study is selection bias — systematic pre-existing differences between groups that could account for outcome differences. Random assignment (even at the school level) is the gold standard for controlling selection bias because it distributes both measured AND unmeasured confounds probabilistically across conditions. School matching reduces baseline variation further.",
+keydomain:"Internal validity; selection bias; random assignment; quasi-experimental vs. experimental design; threats to validity.",
+traps:"Options B, C, and D each identify real validity threats but are not what random assignment most directly controls. Random assignment specifically addresses selection bias. Attrition, instrumentation, and demand characteristics require other design features (blind assessment, retention protocols, cover stories) to control.",
+whyeach:"A is correct — random assignment most directly controls selection bias. B is wrong — attrition is not controlled by matching; it requires monitoring and ITT analysis. C is wrong — instrumentation bias requires blind assessment and standardized protocols, not random assignment. D is wrong — school-level assignment doesn't prevent individual awareness of condition in most designs."},
+
+// 7 — D
+{tag:"Null Hypothesis Testing",text:"A researcher reports: 'The p-value of .03 indicates that there is a 97% probability that the alternative hypothesis is correct.' Which of the following BEST identifies the error in this statement and provides the accurate interpretation?",
+options:["The error is that p = .03 should be compared to α = .01 (not .05) to be considered statistically significant; at α = .05, a p-value of .03 would imply a 97% confidence level, which correctly indicates probability of the alternative hypothesis.",
+"The error is that p-values are reported as one-tailed by convention; a two-tailed p-value of .03 implies a one-tailed probability of .015, and the correct interpretation is that there is a 98.5% probability the alternative hypothesis is true.",
+"There is no error; p = .03 < α = .05 permits rejection of the null hypothesis, and by logical complement, the probability of the alternative hypothesis being correct is 1 − .03 = .97, confirming the researcher's conclusion.",
+"The p-value does NOT represent the probability that the alternative hypothesis is correct. It is the probability of obtaining results as extreme or more extreme than observed, GIVEN that the null hypothesis is true (P(data|H₀)), not P(H₁|data). The statement confuses frequentist p-values with posterior probability of the hypothesis."],
+answer:3,
+explanation:"This is the single most common misinterpretation of p-values. The p-value = P(data this extreme or more | H₀ is true). It is NOT: the probability H₀ is false, the probability H₁ is true, 1 minus the probability H₀ is true, or the probability of a Type I error in this specific instance. Getting this correct requires understanding the frequentist framework: H₀ is either true or false (not a probability); the p-value is about data probability under a fixed H₀.",
+keydomain:"P-value interpretation; null hypothesis significance testing; frequentist framework; Type I error; P(data|H₀) vs P(H₁|data).",
+traps:"Option C (no error) is the trap for anyone who intuitively feels that a significant p-value 'proves' the alternative. This is the base rate fallacy applied to p-values. Even very small p-values do not directly specify probability of H₁.",
+whyeach:"A is wrong — changing the alpha threshold doesn't fix the fundamental misinterpretation; the statement about probability of H₁ is incorrect regardless of alpha. B is wrong — one-tail/two-tail correction doesn't resolve the fundamental probability misinterpretation. C is wrong — the statement IS erroneous; complement logic doesn't apply to p-values. D is correct — p-value = P(data|H₀), not P(H₁|data)."},
+
+// 8 — B
+{tag:"Correlation",text:"A correlation of r = .35 is obtained between childhood trauma scores and adult depression severity in a sample of N = 200 outpatients. The researcher concludes: 'Childhood trauma causes adult depression, with trauma accounting for 12.25% of the variance in depression.' Which of the following critiques is MOST methodologically precise?",
+options:["The researcher has underestimated the effect; r = .35 is a large effect by Cohen's criteria, and accounting for the squared correlation is inappropriate because r² applies only to regression, not to Pearson correlation coefficients.",
+"The variance-explained calculation is correct (r² = .35² = .1225 = 12.25%), but the causal conclusion is unwarranted because correlational designs cannot establish temporal precedence or control for confounds sufficiently to infer causation.",
+"The r² calculation is incorrect; the proportion of variance explained by a correlation coefficient is 2r, not r², making the actual variance explained approximately 70% for r = .35.",
+"The p-value should be reported to validate the causal conclusion; if r = .35, p < .05, then the causal interpretation is valid because statistical significance rules out alternative explanations."],
+answer:1,
+explanation:"r² (= .35² = .1225) IS the correct proportion of shared variance, so the 12.25% calculation is accurate. The error is entirely in the causal inference. Correlational designs lack two requirements for causal inference: (1) experimental manipulation ensuring temporal precedence; (2) control for third-variable confounders. The correlation is consistent with bidirectional effects, reverse causation, and multiple confounders.",
+keydomain:"Correlation; r²; causal inference limitations; third variable problem; temporal precedence.",
+traps:"Option A incorrectly claims r² only applies to regression — r² from Pearson's r IS the proportion of shared variance and applies equally to correlational interpretation. Option C is factually wrong — r² not 2r gives variance explained.",
+whyeach:"A is wrong — r² applies equally to Pearson correlations and regression; this criticism is invalid. B is correct — r² calculation is correct but causal conclusion is unwarranted from correlational data. C is wrong — 2r is not the variance explained formula; r² is. D is wrong — statistical significance rules out chance variation, not alternative causal explanations."},
+
+// 9 — C
+{tag:"ANOVA",text:"A one-way ANOVA comparing four therapeutic orientations (CBT, psychodynamic, humanistic, integrative) on client-rated therapeutic alliance yields F(3, 196) = 4.82, p = .003. The researcher wants to determine which specific pairs of means differ while controlling the familywise error rate. Which post-hoc procedure is MOST appropriate given that the researcher had NO a priori hypotheses about which groups would differ?",
+options:["Fisher's Least Significant Difference (LSD) test, because it is the most powerful post-hoc test and its power advantage is appropriate when the researcher has already obtained a significant omnibus F, making subsequent pairwise tests follow-up confirmations.",
+"The Bonferroni correction (dividing α by the number of comparisons), because it provides the most powerful control of familywise error rate and is optimal when the number of pairwise comparisons is large relative to sample size.",
+"Tukey's Honestly Significant Difference (HSD) test, because it is specifically designed for all pairwise comparisons following a significant omnibus ANOVA, controlling the familywise error rate across all pairwise comparisons simultaneously.",
+"A series of independent-samples t-tests, because the significant ANOVA F-ratio grants post-hoc license to test individual pairs without additional correction, as the omnibus test serves as the familywise error protection."],
+answer:2,
+explanation:"Tukey's HSD is the go-to post-hoc test for ALL pairwise comparisons after a significant one-way ANOVA when there are no a priori hypotheses. It specifically controls the familywise Type I error rate for all pairwise comparisons simultaneously. Bonferroni is more conservative (lower power) than Tukey for pairwise comparisons. Fisher's LSD does NOT adequately control familywise error when k > 3.",
+keydomain:"Post-hoc tests; Tukey HSD; Bonferroni; familywise error rate; ANOVA follow-up.",
+traps:"Option B (Bonferroni) is frequently chosen but is MORE conservative than Tukey's HSD for pairwise comparisons — it controls familywise error but sacrifices more power. Option D is a dangerous misconception — a significant omnibus F does NOT license uncorrected pairwise t-tests.",
+whyeach:"A is wrong — Fisher's LSD does not adequately control familywise error for k > 3 groups without a priori hypotheses. B is wrong — Bonferroni controls familywise error but is more conservative than Tukey for pairwise comparisons. C is correct — Tukey's HSD is specifically designed for all pairwise comparisons controlling familywise error. D is wrong — uncorrected pairwise t-tests after a significant F inflate Type I error substantially."},
+
+// 10 — A
+{tag:"Experimental Design",text:"A researcher studies the effect of mindfulness training on anxiety. Participants are randomly assigned to either mindfulness (n=50) or waitlist control (n=50). Anxiety is measured at pre-treatment, post-treatment, and 6-month follow-up using the BAI. The researcher uses a 2 (condition: mindfulness vs. control) × 3 (time: pre, post, follow-up) mixed-design ANOVA. The most theoretically important finding would be:",
+options:["A significant Condition × Time interaction, indicating that the rate and pattern of change in anxiety across the three time points differs between the mindfulness and control groups — which is the specific inference that mindfulness produces differential change.","A significant main effect of Time, indicating that anxiety scores change from pre- to post-measurement to follow-up, collapsing across both conditions — demonstrating that the measurement instrument is sensitive to temporal change in anxiety.","A significant main effect of Condition, indicating that the mindfulness group has lower mean anxiety scores across all three time points combined — which directly demonstrates the effectiveness of mindfulness training.",
+"A statistically nonsignificant Condition × Time interaction combined with significant main effects of both Condition and Time, which indicates a pure additive model demonstrating that both mindfulness and time independently reduce anxiety without synergistic effects."],
+answer:0,
+explanation:"In a treatment × time design, the INTERACTION is the primary inference of interest. The interaction tests whether groups differ in their pattern of change over time — specifically, whether the mindfulness group shows greater anxiety reduction than controls from pre to post and follow-up. A main effect of Condition alone could reflect pre-existing group differences; a main effect of Time alone reflects temporal change in BOTH groups (possibly including regression to the mean). Only the interaction captures differential treatment efficacy.",
+keydomain:"Mixed ANOVA; interaction effect; main effect vs. interaction; treatment efficacy designs; time × condition interaction.",
+traps:"Option C is a common choice but is WRONG — a main effect of Condition (collapsing across time) doesn't prove the treatment worked; it could reflect pre-treatment differences despite randomization. The interaction — different patterns of change across time — is the key inference.",
+whyeach:"A is correct — Condition × Time interaction is the critical inference of differential treatment efficacy. B is wrong — a main effect of Time (collapsing across conditions) just shows scores change over time, which tells us nothing about whether treatment drove that change. C is wrong — main effect of Condition may reflect pre-existing differences and doesn't demonstrate the PATTERN of change. D is wrong — a non-significant interaction means no differential treatment effect; additive main effects are not the goal."},
+
+// 11 — D
+{tag:"Sampling",text:"A researcher wishes to study burnout among licensed psychologists in the United States. She obtains the membership directory of the American Psychological Association (APA) and randomly selects 500 names from this list. Which of the following is the MOST significant limitation of this sampling strategy?",
+options:["The sample is too small to achieve adequate statistical power for multivariate analyses; a sample of at least 1,000 is required for national surveys to produce generalizable estimates with acceptable margins of error.",
+"The random selection procedure means that researchers cannot compute response rates or determine the demographic characteristics of non-respondents, making it impossible to determine whether the final sample is representative.",
+"The use of a national professional organization's membership directory introduces a stratification confound that artificially equalizes representation across geographic regions, oversampling rural psychologists.",
+"The sampling frame (APA membership directory) excludes licensed psychologists who are not APA members, who may systematically differ from APA members (e.g., in burnout level, work setting, practice focus), making the sample a convenience sample of APA members rather than a probability sample of all licensed psychologists."],
+answer:3,
+explanation:"The core flaw is sampling frame inadequacy. A sampling frame is the list from which a sample is drawn; it should represent the target population. Using the APA directory excludes potentially large segments of licensed psychologists (non-APA members), who may differ systematically — non-members may be more/less burnt out, different in work setting, etc. This makes the sample unrepresentative of all licensed psychologists regardless of how random the within-frame selection is.",
+keydomain:"Sampling frame; probability sampling; sampling bias; external validity; target population vs. accessible population.",
+traps:"Option B describes a real methodological concern (non-response bias) but is SECONDARY to the primary sampling frame issue. Options A and C describe non-issues — sample size norms are context-dependent, and APA membership is not a stratified geographic system.",
+whyeach:"A is wrong — 500 is generally adequate for many national survey analyses; sample size isn't the primary limitation here. B is wrong — response rates CAN be computed if you know the total directory size; this is secondary. C is wrong — APA membership doesn't systematically over/undersample by geography in the way described. D is correct — the APA membership directory is an inadequate sampling frame that excludes non-APA licensed psychologists."},
+
+// 12 — B
+{tag:"Factor Analysis",text:"A researcher conducts exploratory factor analysis (EFA) on a 30-item emotional intelligence measure. The scree plot shows an elbow at factor 4, and parallel analysis suggests retaining 3 factors. The three-factor solution explains 52% of total variance, and all items load ≥ .40 on at least one factor with minimal cross-loadings. Factor 1 has loadings primarily from emotion perception items; Factor 2 from emotion regulation items; Factor 3 from emotion facilitation items. This pattern of results provides support for which type of validity?",
+options:["Content validity, because the three factors demonstrate that the 30 items adequately sample from the three major theoretical domains of emotional intelligence as defined by the Mayer-Salovey-Caruso model.",
+"Structural validity (a component of construct validity), because the factor structure of the measure corresponds to the theoretically proposed dimensional organization of emotional intelligence — verifying that the internal structure of the measure matches the theoretical structure of the construct being measured.",
+"Criterion-related validity (concurrent validity), because the factor loadings represent correlations between items and factors, and the criterion-related validity coefficient must exceed the factor loading for the test to be considered valid.",
+"Incremental validity, because the three-factor solution explains variance (52%) beyond what would be expected by chance, demonstrating that the measure adds predictive power above and beyond the base rate of emotional intelligence in the population."],
+answer:1,
+explanation:"Factor analysis of the internal structure of a measure provides evidence for structural validity — a specific form of construct validity (per AERA/APA/NCME Standards for Educational and Psychological Testing). When the factor structure matches the theoretical organization (three theoretically meaningful factors), this supports the claim that the measure has the internal structure the construct predicts. This is structural, not content, validity.",
+keydomain:"Structural validity; construct validity; factor analysis; EFA; AERA/APA Standards; structural vs. content validity.",
+traps:"Content validity (A) is established through expert judgment of item sampling adequacy — NOT through factor analysis. Students frequently confuse content and structural validity. The empirical factor structure = structural validity evidence; expert item review = content validity evidence.",
+whyeach:"A is wrong — content validity is established through expert review, not factor analysis. B is correct — EFA supporting theoretically proposed factor structure = structural validity evidence. C is wrong — criterion-related validity requires comparing test scores to an external criterion; factor loadings are internal structure, not criterion correlations. D is wrong — incremental validity requires showing the measure adds prediction above existing measures."},
+
+// 13 — C
+{tag:"Non-parametric Tests",text:"A clinical researcher compares the effectiveness of three interventions for insomnia using scores on the Insomnia Severity Index (ISI). She has 12 participants per group. An inspection of the data reveals severe positive skew, non-normal distributions, and significant outliers in all three groups. The Levene test for equality of variances is also significant (p < .05). The MOST appropriate statistical test is:",
+options:["One-way between-subjects ANOVA, because ANOVA is sufficiently robust to violations of normality and homoscedasticity when n ≥ 10 per group, and the central limit theorem ensures the sampling distribution of means is approximately normal.",
+"Welch's ANOVA (Brown-Forsythe correction), because it specifically adjusts the degrees of freedom for heterogeneous variances while maintaining the parametric framework and avoiding the power loss associated with nonparametric alternatives.",
+"The Kruskal-Wallis H test, because it is the nonparametric equivalent of a one-way ANOVA that does not assume normality or homoscedasticity, analyzes rank-transformed data, and is appropriate for comparing three or more independent groups when parametric assumptions are severely violated.",
+"Friedman's ANOVA by ranks, because it is specifically designed for clinical data with outliers and provides more power than the Kruskal-Wallis H test when comparing three groups."],
+answer:2,
+explanation:"When parametric assumptions are severely violated (non-normal distributions, heteroscedasticity, small n, outliers), the Kruskal-Wallis H test is appropriate as the nonparametric analog of one-way ANOVA. It ranks all observations and tests whether group rank distributions differ. Friedman's (D) is for within-subjects (repeated measures) designs, not independent groups. With small n and severe violations, the CLT defense (A) is insufficient.",
+keydomain:"Kruskal-Wallis H test; nonparametric equivalents; ANOVA assumptions; Friedman vs. Kruskal-Wallis; ordinal data.",
+traps:"Option D (Friedman's) is frequently confused with Kruskal-Wallis — Friedman's is the nonparametric equivalent of REPEATED-MEASURES ANOVA (within-subjects), while Kruskal-Wallis is for INDEPENDENT GROUPS. This distinction is critical on the EPPP.",
+whyeach:"A is wrong — with n=12, severe non-normality, significant outliers, AND heteroscedasticity, the CLT/robustness defense is insufficient. B is wrong — Welch's ANOVA addresses heteroscedasticity but still assumes normality; severe non-normality with outliers in n=12 warrants nonparametric approach. C is correct — Kruskal-Wallis H is the nonparametric equivalent for three independent groups. D is wrong — Friedman's ANOVA is for within-subjects (repeated measures) designs, not independent groups."},
+
+// 14 — A
+{tag:"Reliability",text:"A researcher develops a new measure of therapist alliance and administers it to 80 clients. Internal consistency (Cronbach's α = .87) and test-retest reliability over two weeks (r = .79) are assessed. The researcher also has two trained raters independently score alliance from session recordings, yielding an interrater reliability of ICC = .68. Which of the following interpretations of this reliability evidence is MOST accurate?",
+options:["The internal consistency and test-retest values suggest strong reliability; however, the ICC of .68 — while adequate (meeting the commonly used .65 threshold) — indicates moderate interrater agreement, suggesting the observational scoring may need additional rater training or clearer behavioral anchors to achieve the ≥ .80 threshold typically required for clinical assessment instruments.",
+"The Cronbach's α of .87 demonstrates that all items are measuring the same unidimensional construct; therefore, a test-retest reliability coefficient below .87 indicates the construct's stability over time is lower than its internal organization, indicating construct instability.",
+"The ICC of .68 is the most important reliability index because it reflects the actual measurement accuracy of the instrument in clinical use; internal consistency and test-retest reliability are secondary and should only be reported after ICC exceeds .80.",
+"The three reliability coefficients collectively demonstrate that the measure is sufficiently reliable for all clinical and research purposes, as the average reliability ((α + r_test-retest + ICC) / 3 = .78) exceeds the .70 threshold conventionally required for psychological measures."],
+answer:0,
+explanation:"Reliability evidence should be interpreted in context: α=.87 is strong (>0.80 threshold for clinical use); test-retest r=.79 is adequate for a construct with expected trait stability; ICC=.68 is technically adequate but falls below the preferred ≥.80 threshold for clinical assessment instruments. The ICC is specifically for interrater agreement on observational scoring and indicates moderate-to-good agreement that warrants improvement (training, anchor refinement).",
+keydomain:"Reliability; Cronbach's alpha; test-retest reliability; ICC; interrater reliability; reliability thresholds.",
+traps:"Option D's average-reliability approach is not a valid psychometric practice — different reliability types assess different error sources and cannot be averaged. Option B incorrectly equates Cronbach's α with unidimensionality — alpha can be high with multidimensional scales if all subscales are moderately correlated.",
+whyeach:"A is correct — appropriate interpretation of each reliability type with attention to ICC being below clinical threshold. B is wrong — high alpha does not guarantee unidimensionality; alpha is sensitive to item intercorrelations, not factor structure. C is wrong — there is no universally hierarchical ordering of reliability types; each assesses different error sources. D is wrong — averaging different reliability types is not a legitimate psychometric procedure."},
+
+// 15 — D
+{tag:"Bayesian Methods",text:"A researcher uses Bayesian analysis and reports a Bayes Factor of BF₁₀ = 12.4. Which of the following MOST accurately describes what this value means?",
+options:["The data are 12.4 times MORE likely to have occurred under the null hypothesis (H₀) than under the alternative hypothesis (H₁), providing strong evidence that the null hypothesis is correct and the treatment has no effect.",
+"The probability of the alternative hypothesis (H₁) given the data is 12.4 times greater than the prior probability of H₁, indicating that the data have updated the researcher's beliefs by a factor of 12.4 in the direction of H₁.",
+"The effect size for the treatment is 12.4 standard deviations above the null value, with the Bayes Factor serving as a standardized index of practical significance that is comparable to Cohen's d but incorporates prior probability.",
+"The data are 12.4 times more likely to have occurred under the alternative hypothesis (H₁) than under the null hypothesis (H₀), providing strong evidence for H₁ — with BF₁₀ between 10 and 30 conventionally classified as 'strong' evidence for H₁."],
+answer:3,
+explanation:"BF₁₀ = P(data | H₁) / P(data | H₀). A BF₁₀ > 1 favors H₁; a BF₁₀ < 1 favors H₀. BF₁₀ = 12.4 means data are 12.4x more likely under H₁ than H₀. Jeffreys' (1961) conventions: BF₁₀ of 3-10 = 'moderate' evidence for H₁; 10-30 = 'strong' evidence. Note: this is the LIKELIHOOD RATIO, not a posterior probability or effect size.",
+keydomain:"Bayes Factor; BF₁₀; Bayesian inference; Jeffreys' evidence thresholds; likelihood ratio vs. posterior probability.",
+traps:"Option A describes BF₀₁ (evidence for null) not BF₁₀ — the subscript order matters: BF₁₀ = P(data|H₁)/P(data|H₀). Option B partially describes posterior probability updating but confuses the Bayes Factor with the posterior odds ratio — they are related but not equivalent without the prior odds.",
+whyeach:"A is wrong — this describes BF₀₁ (evidence for null), not BF₁₀; the subscript order is critical. B is wrong — the Bayes Factor is a likelihood ratio, not a direct prior-to-posterior multiplier for hypothesis probability. C is wrong — the Bayes Factor is not a standardized effect size; it is a likelihood ratio. D is correct — BF₁₀ = 12.4 means data are 12.4x more probable under H₁; this falls in 'strong' evidence range."},
+
+// 16 — B
+{tag:"Confounds",text:"A researcher notes that in a longitudinal study of child cognitive development, children who received more parental reading time at age 3 had significantly higher verbal IQ scores at age 8 (β = .42, p < .001), controlling for parental SES. A critic argues that parental IQ confounds this relationship because: (a) higher-IQ parents read more to their children; and (b) higher-IQ parents have children who inherit higher verbal IQ. This type of confound is best described as:",
+options:["A moderating variable, because parental IQ changes the STRENGTH of the relationship between parental reading and child verbal IQ — making the regression coefficient higher for high-IQ families and lower for low-IQ families.",
+"A third-variable confound (or common cause confound), wherein a variable (parental IQ) causally influences BOTH the predictor (reading time) and the outcome (child verbal IQ), creating a spurious correlation that may fully or partially account for the apparent reading-IQ relationship.",
+"A mediating variable, because parental IQ transmits the effect of parental reading time to child verbal IQ — without parental IQ serving as the intermediate mechanism, the reading-IQ relationship would not exist.",
+"A suppressor variable, because parental IQ is positively correlated with both reading time and child IQ, causing it to suppress the true relationship and inflate the observed beta coefficient beyond its true population value."],
+answer:1,
+explanation:"A third-variable confound (common cause / spurious correlation) exists when a third variable Z causes both X (predictor) and Y (outcome), creating an observed X→Y association that does not reflect a direct causal effect. Parental IQ → both parental reading AND child IQ creates exactly this structure. This is the classic confound structure in observational research. Controlling for SES doesn't eliminate the parental IQ confound if parental IQ is not measured and controlled.",
+keydomain:"Third-variable confound; common cause confound; spurious correlation; causal inference; confound vs. moderator vs. mediator.",
+traps:"Students frequently confuse confounds (common cause), mediators (chain), and moderators (interaction). A confounder causes BOTH X and Y simultaneously. A mediator is ON the causal path from X to Y (X→M→Y). A moderator changes the STRENGTH of the X→Y relationship.",
+whyeach:"A is wrong — a moderator changes the strength/direction of the X-Y relationship; parental IQ as described causes both X and Y (confound). B is correct — parental IQ as common cause of both reading time and child IQ = third-variable confound. C is wrong — a mediator is on the causal pathway (X→M→Y); parental IQ precedes and causes reading time, not mediates it. D is wrong — a suppressor is uncorrelated with Y but correlated with X, masking the true X-Y relationship — not the described structure."},
+
+// 17 — C
+{tag:"Regression",text:"In hierarchical (sequential) regression, a researcher first enters demographic variables (Step 1: age, sex, SES) that account for R² = .18. She then enters psychological variables at Step 2 (anxiety, depression, coping style), and the R² increases to .34. The ΔR² = .16 is statistically significant (F_change(3, 293) = 9.41, p < .001). The correct interpretation of ΔR² = .16 is:",
+options:["The psychological variables (anxiety, depression, coping) explain 34% of the total variance in the outcome when entered together, with 16% of this being redundant with the demographic variables already in the model.",
+"The psychological variables reduce the unexplained variance by 16 percentage points from the Step 1 residual, so the error variance decreases from 82% to 66% — but the absolute reduction in prediction error is 16% only if the outcome is standardized.",
+"The psychological variables (anxiety, depression, coping) explain an additional 16% of the variance in the outcome beyond what is already explained by the demographic variables — representing their INCREMENTAL contribution to prediction above and beyond demographics.",
+"The psychological variables and the demographic variables together explain 16% of the variance in the outcome, with the remaining 84% attributable to unmeasured variables and random error in the model."],
+answer:2,
+explanation:"ΔR² is the key concept in hierarchical regression: it represents the INCREMENTAL variance explained by the new predictors above and beyond the variables already in the model. ΔR² = .16 means the psychological variables explain 16% more of the outcome variance BEYOND what demographics already explain. This is also called incremental validity when used for validity purposes.",
+keydomain:"Hierarchical regression; ΔR²; incremental variance; sequential entry; Step 1 vs. Step 2 interpretation.",
+traps:"Option A is wrong — 34% is the TOTAL R² from both steps, not just psychological variables. Option D describes a completely wrong arithmetic interpretation. The key distinction is between total R² (what everything explains) and ΔR² (what the new block adds ABOVE the previous block).",
+whyeach:"A is wrong — 34% is the total R² for the full model; ΔR²=.16 is the ADDITIONAL variance from psychological variables. B is wrong — error reduction logic is correct but the 16% is not conditional on standardization. C is correct — ΔR² = incremental variance explained by psychological variables above demographics. D is wrong — total R² (Step 1 + Step 2) is .34, not .16; ΔR² is the incremental block addition."},
+
+// 18 — D
+{tag:"External Validity",text:"A researcher conducts a randomized controlled trial of a trauma-focused CBT protocol for PTSD with a sample of 120 combat veterans recruited through a Veterans Affairs hospital. Effect sizes are large and statistically significant. A clinician wishes to apply this protocol with her clients who are adult survivors of childhood sexual abuse recruited through a community mental health center. Which external validity concern is MOST salient?",
+options:["Statistical conclusion validity is threatened because the original study's sample size may have been insufficient to detect the true effect size in the community mental health population, where treatment engagement and compliance patterns differ significantly from VA settings.",
+"The study's high internal validity from randomization creates a direct trade-off with external validity, as experimental control over extraneous variables necessarily reduces the ecological validity of the treatment conditions to the point that results cannot generalize beyond VA hospital conditions.",
+"The large effect size (typically Cohen's d > 0.8) indicates that the treatment effect is sufficiently powerful to generalize across populations and settings, because large effects are robust to sampling variation and population differences by definition.",
+"Population validity — the degree to which findings generalize across populations — is threatened because the sample (combat veterans, predominantly male, PTSD from combat) may differ meaningfully from the target population (CSA survivors, likely different demographic characteristics, different trauma type and developmental timing, different treatment-seeking context) in ways that affect treatment response."],
+answer:3,
+explanation:"External validity involves the generalizability of findings across populations (population validity), settings (ecological validity), and time (temporal validity). The most salient threat here is POPULATION validity: the original sample (combat veterans, specific trauma type, VA setting) differs substantially from the target clinical population (CSA survivors, different trauma etiology, community setting). These differences could affect trauma processing, shame-based responding, interpersonal schemas, and treatment engagement in ways that modify treatment efficacy.",
+keydomain:"External validity; population validity; ecological validity; generalizability; RCT limitations.",
+traps:"Option B describes an actual historical argument (Campbell's validity tradeoff) but overstates it — high internal validity does NOT necessarily destroy external validity; the tension is real but not absolute. Option C is a dangerous misconception — large effect sizes do not guarantee cross-population generalizability.",
+whyeach:"A is wrong — statistical conclusion validity concerns the accuracy of the statistical inferences within the study, not cross-population replication. B is wrong — the internal/external validity tradeoff is real but not absolute; this overstates it. C is wrong — large effect sizes do not guarantee generalizability; effect moderation by population characteristics is a separate issue. D is correct — population validity: meaningful sample-to-target population differences in trauma type, demographics, and treatment context threaten generalizability."},
+
+// 19 — A
+{tag:"Mediation",text:"A researcher tests whether emotional dysregulation (M) mediates the relationship between childhood adversity (X) and adult anxiety disorder diagnosis (Y). She uses Baron and Kenny's (1986) causal steps approach and also runs a bootstrapped indirect effect analysis. The bootstrapped 95% CI for the indirect effect a×b = [.12, .41]. Which of the following conclusions is MOST appropriate?",
+options:["There is evidence for statistically significant mediation: the indirect effect (a×b) of childhood adversity on anxiety through emotional dysregulation is significant because the 95% bootstrapped confidence interval does not contain zero — supporting the hypothesis that emotional dysregulation is a mediating mechanism.",
+"Complete mediation is demonstrated because the confidence interval [.12, .41] is entirely positive, which means that emotional dysregulation fully accounts for the adversity-anxiety relationship and the direct path (c') must be non-significant.",
+"The Baron and Kenny approach and bootstrapping are redundant methods that should not be simultaneously reported; the researcher should select only the Baron and Kenny approach because it provides clearer tests of each individual mediation step.",
+"The bootstrapped CI [.12, .41] demonstrates that the indirect effect is practically significant with a large effect size, because CIs that exclude a value ≥ .5 indicate that the mediation is substantial by conventional standards."],
+answer:0,
+explanation:"Bootstrapped indirect effects with CIs not containing zero provide evidence for statistically significant mediation. The CI [.12, .41] excludes zero → the indirect effect a×b is significant. Note: this demonstrates the indirect effect exists but does NOT distinguish partial from complete mediation without examining the direct effect c'. Bootstrapping (Hayes, Preacher) has replaced Baron & Kenny as the preferred method for mediation testing.",
+keydomain:"Mediation analysis; Baron & Kenny; bootstrapping; indirect effects; partial vs. complete mediation.",
+traps:"Option B incorrectly equates 'CI entirely positive' with 'complete mediation' — complete mediation requires the DIRECT effect (c') to be non-significant, which cannot be determined from the indirect effect CI alone. The CI being positive only confirms the indirect effect is > 0.",
+whyeach:"A is correct — CI for indirect effect [.12, .41] excludes zero → significant mediation. B is wrong — complete mediation requires direct effect c' to be non-significant; this cannot be determined from the indirect effect CI. C is wrong — bootstrapping is preferred over Baron & Kenny; reporting both is acceptable but they are not redundant. D is wrong — the CI values are the bounds of the indirect effect, not a threshold-based practical significance index."},
+
+// 20 — C
+{tag:"Quasi-experimental",text:"A school district implements a new social-emotional learning (SEL) curriculum in all elementary schools beginning in January. A researcher assesses student behavioral problems (teacher ratings) every 6 months for 3 years before implementation and for 3 years after implementation in the same schools. This design is a:",
+options:["Randomized controlled trial (RCT), because the researcher prospectively collects data and the intervention is implemented systemically across all schools — which functions as the equivalent of random assignment at the population level.",
+"Non-equivalent control group design, because the schools that received the SEL curriculum are compared to themselves at different time points, making the pre-implementation schools serve as a non-equivalent control for the post-implementation schools.",
+"Interrupted time series (ITS) design — a quasi-experimental design that examines whether the level and/or slope of a repeatedly measured outcome variable changes significantly following the introduction of an intervention at a known time point, without a comparison group.",
+"Longitudinal cohort design, because the same students are followed over 6 years with repeated assessments — making the critical comparison within-subjects (pre-post) rather than between-subjects (treatment-control)."],
+answer:2,
+explanation:"An Interrupted Time Series (ITS) design: the same unit (here, schools/students) is assessed repeatedly over time (6 timepoints pre + 6 timepoints post), and the analysis examines whether the TIME SERIES is 'interrupted' at the known intervention point — testing for changes in level (immediate jump) and slope (trend change) attributable to the intervention. ITS is a strong quasi-experimental design when no control group is available.",
+keydomain:"Interrupted time series design; quasi-experimental designs; ITS; level vs. slope change; Cook & Campbell.",
+traps:"Option D (longitudinal cohort) is partially correct (it IS longitudinal) but misidentifies the specific design type. The key feature making this an ITS — not merely longitudinal — is the INTERRUPTION at a known point and the analytical focus on level/slope changes.",
+whyeach:"A is wrong — without random assignment to conditions, this is not an RCT; system-wide implementation is not equivalent to random assignment. B is wrong — non-equivalent control group designs require a COMPARISON group; this design has no comparison schools. C is correct — ITS: repeated measures on the same units with an interruption at a known intervention point. D is wrong — while the design involves longitudinal follow-up, the defining feature is the interruption point, making ITS the correct classification."},
+
+// 21 — B
+{tag:"Type I/II Error",text:"A pharmaceutical company testing a new anxiolytic conducts 20 independent hypothesis tests across 20 different outcome measures, using α = .05 for each test. Assuming all null hypotheses are actually true (i.e., the drug has no real effect on any outcome), what is the probability of obtaining at least one spuriously significant result across the 20 tests?",
+options:["Exactly .05, because the alpha level for each individual test is fixed at .05 regardless of how many tests are conducted, and the probability of a Type I error does not accumulate across independent tests.",
+"Approximately .64, calculated as 1 − (1 − .05)²⁰ = 1 − .95²⁰ ≈ .64 — reflecting the substantial inflation of the familywise Type I error rate when multiple independent tests are conducted without correction.",
+"Exactly .20, because the probability of obtaining one significant result out of 20 independent tests equals the number of tests multiplied by alpha: 20 × .05 = 1.0, capped at the maximum probability of 1.0, then averaged back to .20.",
+"Approximately .10, because the use of a two-tailed test at α = .05 effectively reduces the familywise error rate by half when compared to one-tailed tests, making the effective Type I error rate per 20 tests approximately 20 × .005 = .10."],
+answer:1,
+explanation:"Familywise error rate = 1 − (1 − α)^k where k is the number of independent tests. With k=20, α=.05: FWER = 1 − .95²⁰ = 1 − .358 = .642. This means that with 20 tests of true null hypotheses, there is a 64% chance of at least one spurious significant result — the mathematical basis for multiple comparison corrections (Bonferroni, FDR control).",
+keydomain:"Familywise error rate; multiple comparisons; Type I error inflation; FWER formula; Bonferroni rationale.",
+traps:"Option A is the naive (and wrong) view that the per-test alpha is all that matters. Option C uses a linear (not correct) approximation. The FWER formula is multiplicative, not additive: FWER = 1 − (1−α)^k.",
+whyeach:"A is wrong — Type I error rate DOES accumulate across independent tests; per-test α is not the familywise α. B is correct — FWER = 1 − (1−.05)²⁰ ≈ .64. C is wrong — the linear approximation 20 × .05 = 1.0 is incorrect; the correct formula is multiplicative. D is wrong — two-tailed vs. one-tailed testing affects per-comparison α but does not determine familywise rate; this logic is incorrect."},
+
+// 22 — D
+{tag:"Measurement",text:"A researcher creates a measure of therapeutic homework compliance by having therapists rate each client on a scale from 1 (never completes homework) to 5 (always completes homework). The scale is used to compare compliance rates across three theoretical orientations. The MOST appropriate statistical analysis for this variable, given its measurement level and likely distribution, is:",
+options:["Pearson correlation and linear regression, because a 1–5 rating scale constitutes a continuous variable with equal intervals, and parametric statistics are always appropriate for any numeric data regardless of distribution characteristics.",
+"One-way between-subjects ANOVA, because the scale produces interval-level data with five distinct values, the ANOVA is robust to skew in ordinal data when the number of rating categories exceeds three, and the F-ratio is appropriate for comparing group means.",
+"Cochran's Q test, because it is specifically designed for comparing proportions across three or more treatment conditions when the outcome is measured on a Likert-type scale with fewer than seven response categories.",
+"Kruskal-Wallis H test or ordinal regression, because a 5-point therapist rating scale is best treated as ordinal data (unverified equal intervals, likely non-normal distribution in clinical samples), and nonparametric or ordinal approaches better suit the measurement properties of this variable."],
+answer:3,
+explanation:"A 5-point rating scale is ordinal — the intervals between ratings are not guaranteed to be equal (the difference between 1 and 2 may not equal the difference between 4 and 5). In clinical samples, such ratings often show skewed distributions. For comparing three groups on an ordinal variable with potentially non-normal distributions, Kruskal-Wallis H (nonparametric) or ordinal regression (accounts for ordinality) are more appropriate than ANOVA.",
+keydomain:"Measurement levels; ordinal data; Kruskal-Wallis; Likert scale analysis; parametric vs. nonparametric assumptions.",
+traps:"Option B is extremely common — many researchers treat 5-point scales as interval and use ANOVA. While this is often done in practice, the technically correct answer recognizes the ordinal nature of the variable and the likely non-normal distribution in clinical samples.",
+whyeach:"A is wrong — 5-point rating scales are ordinal, not definitively continuous/interval; equal interval spacing is not guaranteed. B is wrong — 5-point ordinal scales do not meet the equal-interval assumption required for ANOVA; robustness arguments apply to normally distributed interval data. C is wrong — Cochran's Q is for matched (dependent) dichotomous data, not ordinal ratings across independent groups. D is correct — ordinal scale + non-normal distribution + three groups = Kruskal-Wallis or ordinal regression."},
+
+// 23 — A
+{tag:"Meta-analysis",text:"A researcher conducts a meta-analysis of 32 studies examining the effectiveness of CBT for social anxiety disorder and computes a weighted mean effect size of d = 0.74 (95% CI: [0.58, 0.90]). Cochran's Q test is significant (Q(31) = 67.8, p < .001), and I² = 68%. What is the MOST appropriate conclusion and analytical response?",
+options:["There is substantial heterogeneity in effect sizes across studies (I² = 68%, indicating ~68% of between-study variance is due to true differences in effects rather than sampling error), requiring a random-effects model and moderator analyses to identify study-level variables (e.g., CBT type, population characteristics, control condition) that might explain between-study variability.",
+"The significant Q test demonstrates that all 32 studies should be excluded from the final meta-analysis because heterogeneity violates the core assumption of meta-analysis that effect sizes across studies estimate the same population parameter.",
+"I² = 68% indicates that 68% of participants across the 32 studies showed improvement with CBT, validating the treatment's effectiveness with a response rate nearly seven times higher than typically expected from placebo conditions.",
+"The mean effect size d = 0.74 can be interpreted as definitive evidence for CBT efficacy regardless of the significant Q and I², because confidence intervals provide sufficient information about precision and heterogeneity does not affect the validity of the pooled estimate."],
+answer:0,
+explanation:"I² = 68% falls in the 'substantial' heterogeneity range (Higgins' benchmarks: 25% low, 50% moderate, 75% high). Significant Q and high I² indicate that between-study variability is real rather than sampling error, requiring: (1) a random-effects model (not fixed-effects, which assumes all studies estimate same true effect); (2) moderator analyses (meta-regression or subgroup analyses) to identify sources of heterogeneity.",
+keydomain:"Meta-analysis; heterogeneity; I²; Cochran's Q; fixed vs. random effects models; moderator analysis.",
+traps:"Option C is a flagrant misinterpretation of I² — it is NOT a response rate or percentage of participants improved; it is the proportion of total variance attributable to true between-study heterogeneity rather than sampling error. This misinterpretation appears frequently.",
+whyeach:"A is correct — substantial heterogeneity (I²=68%) requires random-effects model and moderator analyses. B is wrong — heterogeneity does not invalidate meta-analysis; it changes the appropriate model (random vs. fixed effects) and necessitates investigation of moderators. C is wrong — I² is NOT a response rate; it is the proportion of variance attributable to true heterogeneity. D is wrong — heterogeneity DOES affect interpretation; the CIs around d=0.74 must be interpreted with the random-effects caveat."},
+
+// 24 — C
+{tag:"Regression Assumptions",text:"In a multiple regression analysis predicting therapist effectiveness from five predictors, the researcher inspects diagnostic plots and finds: (1) a funnel-shaped pattern (fan-out) in the residuals vs. fitted values plot; (2) non-normal distribution of residuals (positive skew); and (3) several high-leverage, high-influence points (Cook's D > 1.0). Which of the following MOST accurately names the specific violations detected and their appropriate remediation?",
+options:["The researcher has detected multicollinearity (highly correlated predictors inflating standard errors), which should be corrected by removing one predictor from each correlated pair and re-running the analysis with independent predictors.",
+"The researcher has detected autocorrelation (correlated residuals over sequential observations) and non-normality, which are best corrected by applying the Durbin-Watson correction and log-transforming the outcome variable.",
+"The researcher has detected heteroscedasticity (non-constant residual variance — indicated by the fan-shaped pattern), non-normality of residuals, and influential observations. Appropriate remedies include variance-stabilizing transformations (log, square root), robust regression methods, and investigation/reporting of influential cases.",
+"The researcher has detected evidence of perfect multicollinearity (all predictors are in a linear combination producing singular matrix), indicated by the funnel pattern in residuals, which requires removing all correlated predictors except one."],
+answer:2,
+explanation:"The fan-shaped (funnel) pattern in residuals vs. fitted = heteroscedasticity (violation of constant variance). Skewed residuals = non-normality. Cook's D > 1.0 = highly influential observations. Remediation: (1) heteroscedasticity → log/square root transformation of outcome or weighted least squares; (2) non-normality → transformations or robust methods; (3) influential cases → investigate, report sensitivity analyses with/without.",
+keydomain:"Regression diagnostics; heteroscedasticity; residual plots; Cook's D; influential cases; regression assumptions.",
+traps:"Option A (multicollinearity) is diagnosable through VIF values, tolerance, and correlation matrix — NOT through residual plots. The funnel pattern in residuals does NOT indicate multicollinearity. These are commonly confused diagnostic issues.",
+whyeach:"A is wrong — funnel-shaped residual plot indicates heteroscedasticity, not multicollinearity; multicollinearity is diagnosed via VIF/tolerance. B is wrong — autocorrelation is a time-series issue diagnosed via Durbin-Watson, not residual vs. fitted fan patterns. C is correct — fan-shaped residuals = heteroscedasticity; skewed residuals = non-normality; Cook's D >1 = influential cases. D is wrong — perfect multicollinearity produces computational errors/singular matrices, not fan-shaped residual patterns."},
+
+// 25 — B
+{tag:"Repeated Measures",text:"A researcher measures cortisol levels in 30 participants at four time points: baseline, post-stress, 30 minutes post-stress, and 60 minutes post-stress. A repeated-measures ANOVA is conducted. Mauchly's test of sphericity is significant (W = .61, p = .016). Which of the following MOST accurately describes the consequence of this finding and the appropriate response?",
+options:["The sphericity violation indicates that the within-subjects factor (time) has more than two levels, which violates the assumption that repeated-measures ANOVA can only be applied to two-measurement designs; the researcher should use a paired t-test instead.",
+"The significant Mauchly's test indicates that the sphericity assumption (equal variances of all pairwise difference scores) is violated, which inflates the Type I error rate for the within-subjects F-test. The appropriate correction is to apply the Greenhouse-Geisser or Huynh-Feldt epsilon correction to adjust the degrees of freedom, thereby producing a more conservative F-test.",
+"The sphericity violation means that the between-subjects error term in the ANOVA is heteroscedastic and requires Box's M test to evaluate whether the variance-covariance matrices are equivalent across all levels of the within-subjects factor.",
+"Mauchly's test result requires the researcher to switch from a parametric repeated-measures ANOVA to the Friedman nonparametric test, because sphericity is an absolute requirement of repeated-measures ANOVA that cannot be corrected using mathematical adjustments."],
+answer:1,
+explanation:"Sphericity = assumption that variances of all pairwise differences between levels are equal. Violation inflates the F-statistic (too liberal). Remediation: Greenhouse-Geisser (ε̂) correction adjusts df downward, producing a more conservative test (always available). Huynh-Feldt correction is less conservative (use when ε̂ > .75). Multivariate approach (MANOVA) is another option. Violation does NOT require switching to Friedman's.",
+keydomain:"Sphericity; Mauchly's test; Greenhouse-Geisser correction; Huynh-Feldt; repeated-measures ANOVA.",
+traps:"Option D is a common misconception — sphericity violation does NOT require abandoning repeated-measures ANOVA for Friedman's. Greenhouse-Geisser correction is specifically designed to handle sphericity violations within the parametric framework.",
+whyeach:"A is wrong — sphericity is not about the number of levels; it is about equal variances of pairwise differences. B is correct — sphericity violation inflates Type I error; GG or HF epsilon corrections adjust degrees of freedom. C is wrong — Box's M tests equality of covariance matrices in MANOVA, not the sphericity correction context. D is wrong — Greenhouse-Geisser and Huynh-Feldt corrections handle sphericity violations within the parametric framework; switching to Friedman's is not required."},
+
+// 26 — D
+{tag:"Logistic Regression",text:"A researcher uses binary logistic regression to predict whether patients complete a 12-week CBT program (1 = completed, 0 = dropped out) from three predictors: baseline depression severity, therapeutic alliance, and number of prior treatment episodes. For the therapeutic alliance predictor, the output shows: B = .42, SE = .18, Wald = 5.44, p = .020, OR = 1.52. The MOST accurate interpretation of this odds ratio is:",
+options:["Patients with higher therapeutic alliance have a 1.52% greater probability of completing treatment compared to patients with lower alliance, holding depression severity and prior treatment episodes constant.",
+"Patients with higher therapeutic alliance are 52% MORE likely than patients with lower therapeutic alliance to complete treatment, with 'more likely' here referring to a proportional increase in the raw probability of completion.",
+"The odds ratio of 1.52 indicates a medium effect size (by Cohen's criteria for ORs) for therapeutic alliance as a predictor of treatment completion, equivalent to d = 0.52 in a two-group standardized mean difference comparison.",
+"For each one-unit increase in therapeutic alliance, the ODDS of treatment completion (vs. dropout) increase by a factor of 1.52 (i.e., by 52%), holding all other predictors constant — OR > 1 indicates a positive relationship between alliance and completion."],
+answer:3,
+explanation:"In logistic regression, the OR = e^B represents the multiplicative change in the ODDS (not probability) of the outcome for a one-unit increase in the predictor. OR = 1.52 means the odds of completion multiply by 1.52 (increase by 52%) for each one-unit increase in alliance. ODDS ≠ PROBABILITY — this is the central interpretive challenge of logistic regression. ORs cannot be directly interpreted as probability ratios unless baseline probability is near 50%.",
+keydomain:"Logistic regression; odds ratio; log-odds; OR interpretation; OR vs. probability ratio.",
+traps:"Option B uses 'more likely' to mean probability change — ORs are multiplicative changes in ODDS, not probability. When the outcome is rare, OR ≈ probability ratio, but when outcome prevalence is substantial (as in treatment completion), OR overstates the probability ratio. The correct unit is ODDS, not probability.",
+whyeach:"A is wrong — OR does not indicate percentage point change in probability; it is a multiplicative change in odds. B is wrong — 'more likely' in terms of raw probability is NOT what OR measures; OR is multiplicative change in ODDS. C is wrong — Cohen's criteria for OR effect sizes exist but OR = 1.52 is not equivalent to d = 0.52 through simple equality. D is correct — OR=1.52: for each one-unit increase in alliance, odds of completion multiply by 1.52."},
+
+// 27 — A
+{tag:"Measurement Invariance",text:"A researcher develops a depression scale and wishes to compare mean depression scores between two cultural groups (Asian-American and European-American samples). Before conducting the comparison, she tests for measurement invariance using confirmatory factor analysis. She finds configural invariance and metric invariance, but scalar invariance fails (two item intercepts are non-invariant). What does this mean for her substantive comparison?",
+options:["Partial scalar invariance exists — most item intercepts are equal, but two items have different intercepts (i.e., different item endorsement tendencies at the same latent depression level). Full latent mean comparison is not valid, but a partial invariance approach (freeing the non-invariant intercepts) can permit a constrained comparison of latent means with acknowledged limitations.",
+"Scalar invariance failure means that the factor structure (configural) is fundamentally different between groups, making any comparison between groups — including correlational, mean-level, or structural — completely invalid.",
+"Metric invariance failure (which is what scalar invariance technically tests) means that the factor loadings differ between groups, suggesting that the items have different degrees of relationship to the underlying latent construct across cultural groups.",
+"Scalar invariance failure is irrelevant for mean comparison purposes; because configural and metric invariance are satisfied, the researcher can proceed with comparing latent means without any caveats."],
+answer:0,
+explanation:"Measurement invariance hierarchy: (1) Configural = same factor structure; (2) Metric = equal factor loadings → can compare correlations/relationships; (3) Scalar = equal item intercepts → can compare latent MEANS. Scalar invariance failure means item intercepts differ (items are endorsed at different rates at the same latent level across groups). Consequence: full latent mean comparison is invalid. Partial invariance (freeing the 2 non-invariant intercepts) allows a constrained comparison with caveats.",
+keydomain:"Measurement invariance; configural/metric/scalar invariance; latent mean comparison; partial invariance; CFA.",
+traps:"Option C incorrectly states that scalar invariance tests factor loadings — loadings are tested at the METRIC level. Scalar invariance specifically tests ITEM INTERCEPTS. This is a critical distinction for the EPPP.",
+whyeach:"A is correct — partial scalar invariance allows constrained latent mean comparison with freed non-invariant intercepts. B is wrong — scalar invariance failure does not affect configural/metric invariance; factor structure and loadings may still be valid. C is wrong — metric invariance tests factor loadings; scalar invariance tests item intercepts. D is wrong — scalar invariance is specifically required for latent mean comparisons; its failure is NOT irrelevant."},
+
+// 28 — C
+{tag:"Qualitative Research",text:"A researcher uses interpretive phenomenological analysis (IPA) to examine therapists' lived experiences of therapeutic impasses with clients. She conducts semi-structured interviews with 8 therapists and uses thematic analysis to identify patterns. A reviewer critiques the study, suggesting the researcher should have used a larger sample to achieve statistical power. Which of the following MOST accurately addresses this critique?",
+options:["The reviewer is correct: qualitative studies require minimum sample sizes equivalent to quantitative studies to achieve adequate theoretical saturation, and 8 participants is generally insufficient to generate reliable themes without confirmatory statistical validation.",
+"The reviewer's concern is partially valid: IPA requires larger samples than grounded theory because IPA's goal of theoretical saturation demands more cases to achieve conceptual completeness, and a minimum of 20 participants is required by the IPA methodological standards.",
+"The critique misapplies quantitative criteria to qualitative research: IPA does not aim for statistical generalizability or power (which are quantitative concerns); instead, it aims for in-depth idiographic understanding, for which smaller purposively sampled groups (typically 3–10 for IPA) are methodologically appropriate and sufficient.",
+"The reviewer is correct that statistical power is irrelevant but wrong about sample size: qualitative research requires samples of at least 30 to achieve adequate representativeness, because without demographic representation, the themes identified cannot be generalized to the broader population of therapists."],
+answer:2,
+explanation:"IPA is an idiographic qualitative methodology (Smith, Jarman & Osborn): it aims for in-depth understanding of individual experience, NOT statistical generalizability. Recommended sample sizes for IPA: 3-10 for single-group studies. Power analysis and statistical generalizability are quantitative frameworks. Quality in IPA is evaluated through credibility, transferability, dependability, and confirmability (Lincoln & Guba) — not through statistical power.",
+keydomain:"Interpretive phenomenological analysis (IPA); qualitative research criteria; sample size in qualitative research; idiographic vs. nomothetic; trustworthiness.",
+traps:"Option B is wrong about theoretical saturation being an IPA criterion — saturation is a grounded theory criterion. IPA aims for depth of analysis of individual experiences, not saturation of concepts. Don't confuse qualitative methodologies (IPA, grounded theory, phenomenology, ethnography).",
+whyeach:"A is wrong — statistical power is irrelevant to IPA; small purposive samples are appropriate and methodologically justified. B is wrong — saturation is a grounded theory criterion, not IPA; IPA recommends 3-10 participants. C is correct — IPA is idiographic qualitative research; statistical power criteria don't apply; 8 participants is methodologically appropriate. D is wrong — demographic representativeness and statistical generalizability are quantitative norms not applicable to IPA."},
+
+// 29 — B
+{tag:"ANCOVA",text:"A researcher uses ANCOVA to compare post-treatment anxiety scores across three therapy conditions, controlling for baseline anxiety. Which of the following describes the PRIMARY advantage of including baseline anxiety as a covariate?",
+options:["Including the covariate increases the number of degrees of freedom available for the F-test, making the ANCOVA more powerful than ANOVA by providing additional variance that can be attributed to the independent variable.",
+"Controlling for baseline anxiety removes the variance in post-treatment scores attributable to pre-existing differences in anxiety, reducing within-group error variance (MSwithin), increasing the F-ratio, and statistically adjusting group means to reflect equivalent starting points.",
+"ANCOVA's primary advantage is that it eliminates the need for random assignment by statistically equalizing the groups on the covariate, thereby transforming a quasi-experimental design into a functionally equivalent randomized experiment.",
+"Including baseline anxiety as a covariate partials out its correlation with the independent variable (treatment condition), directly reducing Type I error by preventing the covariate from inflating between-group differences."],
+answer:1,
+explanation:"ANCOVA's primary purpose: by controlling for baseline (covariate), variance in the outcome attributable to pre-existing differences is removed from the error term → MSwithin decreases → F-ratio increases → increased power. Secondarily, adjusted means reflect group comparisons as if groups had equal covariate scores. This is the statistical rationale for including relevant covariates — they reduce noise.",
+keydomain:"ANCOVA; covariate; within-group error reduction; statistical control; adjusted means; power increase.",
+traps:"Option C is a VERY COMMON misconception — ANCOVA does NOT substitute for randomization. In quasi-experimental designs, ANCOVA adjusts for MEASURED covariates but cannot control for unmeasured confounds the way true randomization does. Lord's paradox illustrates dangers of ANCOVA as a substitute for randomization.",
+whyeach:"A is wrong — ANCOVA uses one df for the covariate, slightly reducing, not increasing, df; power increases from reduced error variance, not more df. B is correct — removing baseline variance from error term reduces MSwithin, increases F, adjusts means. C is wrong — ANCOVA cannot replace randomization; it controls only for measured covariates, not unmeasured confounds. D is wrong — ANCOVA reduces ERROR variance, not Type I error per se; it doesn't 'partial out' covariate-IV correlation in the way described."},
+
+// 30 — D
+{tag:"Sampling",text:"A researcher recruits participants for a clinical trial of a new PTSD treatment using Facebook advertising and Reddit posts. Participants self-select by responding to advertisements. This type of sampling is BEST described as:",
+options:["Systematic sampling, because participants are selected from a sequential online medium in a structured way — every person who visits the social media platform and meets criteria is considered for selection in a defined sequence.",
+"Stratified random sampling, because the use of multiple platforms (Facebook and Reddit) ensures representation from distinct demographic strata (older vs. younger users, respectively), approximating population proportions.",
+"Cluster sampling, because social media platforms represent geographic and demographic clusters of potential participants, and the researcher selects entire clusters (platforms) before sampling individuals within those clusters.",
+"Volunteer (self-selection) sampling — a form of convenience sampling — because participants proactively choose to respond to advertisements; this introduces self-selection bias (e.g., over-representation of help-seeking individuals, those with internet access, those motivated for treatment) that limits external validity."],
+answer:3,
+explanation:"When participants choose whether to respond to advertisements, this is volunteer/self-selection sampling — a nonprobability convenience method. Self-selection bias: respondents systematically differ from non-respondents in ways that affect study outcomes (treatment-seekers, digital access, specific demographics). This limits external validity (generalizability) because the sample is not representative of all PTSD sufferers.",
+keydomain:"Volunteer sampling; self-selection bias; convenience sampling; probability vs. nonprobability sampling; external validity.",
+traps:"Options A-C describe probability sampling methods that require a sampling frame and systematic selection procedures. None of these apply to passive advertisement response — these require active researcher control over who is selected.",
+whyeach:"A is wrong — systematic sampling selects every k-th unit from an ordered list; self-selection from ads is not systematic. B is wrong — stratified sampling requires deliberate proportional selection from defined strata; multi-platform use is not stratification. C is wrong — cluster sampling selects intact groups; selecting from platforms is not cluster sampling. D is correct — voluntary response to advertisements = volunteer/self-selection bias convenience sampling."},
+
+// 31 — A
+{tag:"Structural Equation Modeling",text:"A researcher constructs a structural equation model (SEM) examining the relationships among attachment anxiety, emotion dysregulation, and social anxiety disorder. The model yields: CFI = .93, RMSEA = .071 (90% CI: [.048, .093]), SRMR = .062. Which of the following MOST accurately evaluates this model fit?",
+options:["Model fit is adequate-to-acceptable by conventional criteria: CFI = .93 exceeds the ≥ .90 threshold (some recommend ≥ .95 for ideal fit); RMSEA = .071 falls within the acceptable range (≤ .08) though not ideal (≤ .05); SRMR = .062 is within acceptable range (< .08). The model fits the data reasonably but not perfectly.",
+"Model fit is excellent: CFI > .90 is the gold standard indicating perfect model fit, RMSEA < .10 is ideal, and SRMR < .10 confirms no systematic residuals — together these indices demonstrate that the model is the correct causal model for the data.",
+"Model fit is poor and the model should be rejected: the conventional threshold for acceptable CFI is ≥ .99, and both the RMSEA and SRMR exceed the strict thresholds (RMSEA < .05, SRMR < .05) required by current simulation-based guidelines.",
+"Model fit indices are not interpretable without also reporting the chi-square test of exact fit; if χ²(df) is non-significant, all three fit indices are irrelevant because the data are consistent with perfect model fit."],
+answer:0,
+explanation:"SEM fit criteria (Hu & Bentler, 1999; conventional): CFI ≥ .90 (acceptable), ≥ .95 (good); RMSEA ≤ .05 (good), .05–.08 (acceptable), > .10 (poor); SRMR ≤ .08 (good). Here: CFI=.93 is acceptable; RMSEA=.071 is in the acceptable range; SRMR=.062 is acceptable. The 90% CI for RMSEA includes .05 and .10, which spans from good to borderline poor — indicating uncertainty. Overall: adequate-to-acceptable fit, not excellent, not poor.",
+keydomain:"SEM fit indices; CFI; RMSEA; SRMR; Hu & Bentler criteria; model fit evaluation.",
+traps:"Option B overstates what CFI >.90 means ('perfect fit') — it indicates adequate, not perfect, fit. Option C is too strict — CFI ≥ .99 is not the universally accepted gold standard. Hu & Bentler's simulation-based guidelines suggest ≥ .95 as preferred, but ≥ .90 is commonly accepted as adequate.",
+whyeach:"A is correct — adequate-to-acceptable fit based on conventional thresholds for all three indices. B is wrong — CFI > .90 is adequate, not 'excellent/perfect'; RMSEA < .10 is not 'ideal' (ideal is < .05). C is wrong — CFI ≥ .99 is not the required gold standard; the described fit is adequate, not poor. D is wrong — χ² is oversensitive to sample size and is rarely used as the sole fit criterion; fit indices are interpretable without it."},
+
+// 32 — C
+{tag:"Research Ethics",text:"A researcher studying trauma history in college students uses a passive consent procedure in which students enrolled in introductory psychology receive research credit for participating. Students are told the study involves 'questionnaires about personal experiences' but are not told that the measures include detailed questions about sexual and physical abuse until they begin the questionnaire. Which of the following represents the MOST serious ethical concern?",
+options:["The use of introductory psychology research pools constitutes a captive population, and research credit incentives constitute coercion that nullifies voluntary consent in all research regardless of the topic or disclosure procedures used.",
+"The passive consent procedure does not provide sufficient information about the nature of the study's content, violating the APA requirement that participants be told 'enough' about the study to make an informed decision about participation.",
+"The deceptive withholding of information about the sensitive content (trauma/abuse questions) prevents participants from making a genuinely informed decision about a potentially distressing experience — violating informed consent requirements and creating risk of harm through unexpected exposure to psychologically activating content.",
+"The study should have used active consent from participants' parents or guardians before proceeding, as college students under age 21 may not have the legal capacity to provide independent informed consent for research involving sensitive psychological content."],
+answer:2,
+explanation:"The core ethical violation is failure to obtain meaningful informed consent. APA Ethics Code requires disclosure of any aspects of the study 'reasonably expected to influence willingness to participate' — sensitive trauma content clearly falls in this category. Withholding that the questionnaire covers sexual/physical abuse prevents participants from making an informed, autonomous decision. This also creates risk of distress from unexpected exposure. The Belmont Report's 'respect for persons' principle is violated.",
+keydomain:"Informed consent; APA Ethics Code; Belmont Report; research ethics; sensitive topics; deception in research.",
+traps:"Option A overstates the coercion claim — research credit for intro psychology participation is generally considered acceptable with safeguards (alternative credit options, voluntary participation). Option D is wrong — college students ≥ 18 are legally adults who can independently consent to research.",
+whyeach:"A is wrong — research pools with credit are acceptable under APA guidelines when alternative credit options exist; this doesn't nullify all consent. B is partially right but understates the severity — the issue is not merely 'not enough' information but specifically withholding information about potentially distressing content. C is correct — withholding trauma content information prevents informed consent about distressing material. D is wrong — college students ≥ 18 are legal adults; parental consent is not required."},
+
+// 33 — D
+{tag:"Survival Analysis",text:"A researcher studying recovery from major depressive disorder (MDD) wishes to analyze the time (in weeks) until participants achieve remission following psychotherapy. Sixty participants enter the study; 22 participants have not yet achieved remission when the study ends. The researcher wants to compare time-to-remission between CBT and interpersonal therapy groups. The MOST appropriate statistical method is:",
+options:["Independent-samples t-test comparing mean weeks-to-remission between CBT and IPT groups, after listwise deleting the 22 non-remitted participants whose outcome data are considered missing and therefore unusable in standard parametric analyses.",
+"Chi-square test of independence comparing the proportion of participants who achieved remission in CBT vs. IPT groups, because the dichotomous outcome (remitted/not remitted) is the appropriate level of analysis for treatment comparison purposes.",
+"Linear regression predicting weeks-to-remission from treatment condition, with indicator coding for treatment group and imputation of the maximum observed time for the 22 non-remitted participants as a conservative estimate of their potential remission time.",
+"Survival analysis — specifically the Kaplan-Meier estimator with a log-rank test for group comparison — because it appropriately handles censored observations (the 22 non-remitted participants who contribute partial follow-up time), avoiding both deletion and imputation of incomplete observations."],
+answer:3,
+explanation:"The 22 non-remitted participants are CENSORED — they have not experienced the event by study end, but they DO provide information (they were event-free for their entire observation period). Survival analysis handles censored data properly. Kaplan-Meier provides survival (or in this case, non-remission) curves; the log-rank test compares curves between groups. Deleting censored cases (A) or imputing extreme values (C) both introduce substantial bias.",
+keydomain:"Survival analysis; censored data; Kaplan-Meier; log-rank test; time-to-event data; censoring.",
+traps:"Option A (listwise deletion of non-remitted participants) is the dangerous naive approach that ignores the information these participants provide and biases results toward faster remitters. Option D is the correct method specifically because of the censoring problem — this is survival analysis's raison d'être.",
+whyeach:"A is wrong — listwise deletion of censored observations introduces selection bias by removing systematically slower-to-remit participants. B is wrong — dichotomizing outcome to proportion remitted ignores time-to-event information and how long participants were at risk. C is wrong — imputing maximum time for censored cases is a conservative heuristic that doesn't properly account for censoring and violates regression assumptions. D is correct — Kaplan-Meier + log-rank test properly handles censored observations."},
+
+// 34 — B
+{tag:"Psychometrics",text:"A researcher uses item response theory (IRT) to analyze a 25-item cognitive ability test. She examines item characteristic curves (ICCs) for each item. Item 12 has a very steep ICC (high discrimination parameter, a = 2.4), while Item 18 has a flat, shallow ICC (low discrimination, a = 0.3). What do these discrimination parameters indicate?",
+options:["Item 12 is more difficult than Item 18 because steeper ICCs indicate higher item difficulty (b parameter), and the a parameter represents the asymptotic upper bound of the item response function rather than the item's discriminating power.",
+"Item 12 (a = 2.4) is highly discriminating — it sharply differentiates examinees at nearby ability levels — while Item 18 (a = 0.3) has poor discrimination, providing minimal differential information about ability level; Item 12 contributes far more to test precision (information) at its threshold ability level.",
+"Item 12 and Item 18 have equivalent psychometric quality because discrimination parameters are relative to the sample's ability distribution; a = 2.4 in a low-ability sample is equivalent in information to a = 0.3 in a high-ability sample.",
+"Both items should be removed from the test because IRT guidelines specify that discrimination parameters must fall within the range 0.5 ≤ a ≤ 2.0 for items to be psychometrically acceptable, and both items fall outside this acceptable range."],
+answer:1,
+explanation:"In IRT, the discrimination parameter (a) determines the steepness of the item characteristic curve. High a (like 2.4): steep ICC, sharply differentiates examinees near the difficulty threshold — high precision/information at that ability level. Low a (like 0.3): flat ICC, provides similar response probabilities across a wide range of ability levels — poor differentiation, little test information. Items with low discrimination (a < ~0.5) are generally candidates for removal or revision.",
+keydomain:"Item response theory; discrimination parameter; item characteristic curve; item information; IRT parameters (a, b, c).",
+traps:"Option A confuses the a (discrimination) and b (difficulty) parameters — the b parameter locates the item on the ability scale; the a parameter governs the SLOPE of the ICC. Students frequently conflate these two IRT parameters.",
+whyeach:"A is wrong — the a parameter is discrimination (ICC steepness), not difficulty; difficulty is the b parameter. B is correct — high a = steep, discriminating; low a = flat, non-discriminating; Item 12 contributes more information. C is wrong — discrimination parameters are NOT relative to sample ability distribution in the same scale-dependent way described. D is wrong — Item 12's a=2.4 is actually strong; guidelines suggest concern for a < 0.5; removing Item 12 (a=2.4) would be incorrect."},
+
+// 35 — A
+{tag:"Experimental Control",text:"In a double-blind RCT of a new antidepressant, neither the participants nor the assessors rating depression severity know whether participants received the active drug or placebo. However, the statistician conducting the primary outcome analysis knows which participants were in which condition. Which of the following MOST accurately assesses the adequacy of this blinding procedure?",
+options:["The blinding is adequate for controlling demand characteristics (participant expectation effects) and rater bias (assessor expectation effects) — the two most critical sources of bias in treatment trials. The statistician's knowledge of group assignment does not compromise these controls, though analyst bias is a recognized concern that pre-registration of analysis plans addresses.",
+"The trial is not adequately blinded because a double-blind procedure requires that ALL personnel associated with the study — including the statistician — be blind to group assignment throughout all phases including data analysis, and any deviation invalidates the double-blind designation.",
+"The trial should be classified as single-blind because only one category of people (participants) is blind; assessors and statisticians constitute a single class of researcher personnel who should collectively be blind for double-blind status.",
+"Double-blind procedures are only required for pharmacological trials; for psychotherapy RCTs, single-blind procedures (blind assessors only, non-blind therapists) are the maximum blinding achievable and are considered equivalent to double-blind designs."],
+answer:0,
+explanation:"'Double-blind' traditionally means participants and outcome assessors are both blind to condition. This controls the two primary sources of performance/detection bias: (1) participant behavior changes from knowing treatment status (performance bias); (2) assessor ratings influenced by knowing condition (detection bias). Statistician unblinding is a recognized but secondary concern — addressed through pre-registered statistical analysis plans (SAPs), which specify analysis methods before unblinding.",
+keydomain:"Double-blind RCT; blinding; performance bias; detection bias; statistical analysis plans; CONSORT guidelines.",
+traps:"Option B makes an overly strict claim that all personnel must be blind. CONSORT guidelines define double-blind as participants and outcome assessors being blind — statistician blinding is recommended but is not definitionally required for 'double-blind' status.",
+whyeach:"A is correct — double-blind controls participant and assessor bias; statistician knowledge is a secondary concern addressed by pre-registration. B is wrong — CONSORT definition of double-blind doesn't require statistician blinding; this overstates the requirement. C is wrong — assessors are blinded (double-blind = participants + assessors); the statistician is a separate category. D is wrong — psychotherapy RCTs can achieve greater blinding than described; this conflates different research contexts."},
+
+// 36 — C
+{tag:"Missing Data",text:"A researcher is conducting a longitudinal study and finds that 18% of participants are missing post-treatment data. Missingness is most common among participants with higher baseline depression severity and lower SES. This pattern of missing data is best characterized as:",
+options:["Missing Completely At Random (MCAR), because the missingness appears to be concentrated in a specific demographic subgroup (low SES) rather than distributed randomly, and any systematic pattern across demographic groups meets the MCAR definition.",
+"Missing Not At Random (MNAR), because participants who are missing post-treatment data have higher baseline depression, and since depression itself is the outcome being measured, the missingness is related to the unobserved post-treatment depression values, qualifying as ignorable missingness.",
+"Missing At Random (MAR), because the missingness is systematically related to OBSERVED variables (baseline depression, SES) that are measured and available in the dataset — making the missing mechanism explainable by (and therefore statistically conditionable on) observed data.",
+"Informative censoring, because the dropout in a longitudinal study is attributable to health-related deterioration (worsening depression) that prevents continued participation, making this a survival analysis problem rather than a missing data problem."],
+answer:2,
+explanation:"Rubin's missing data taxonomy: MCAR = missingness is unrelated to any data (observed or missing); MAR = missingness is related to OBSERVED data (after conditioning on observed variables, no remaining relationship to unobserved values); MNAR = missingness is related to the UNOBSERVED outcome values even after conditioning on observed data. Here: missingness is predicted by OBSERVED baseline depression and SES → MAR. Under MAR, multiple imputation and maximum likelihood are unbiased. MNAR requires sensitivity analyses.",
+keydomain:"Missing data mechanisms; MCAR/MAR/MNAR; Rubin; multiple imputation; listwise deletion bias.",
+traps:"Option A mistakes 'systematic' for 'not MCAR' — MCAR requires missingness to be UNRELATED to any data whatsoever. Systematic missingness related to observed variables is MAR, not MCAR. Option B almost correctly identifies MNAR but incorrectly calls it 'ignorable' — MNAR is NON-ignorable missingness.",
+whyeach:"A is wrong — MCAR requires missingness to be unrelated to all data; systematic missingness related to observed variables cannot be MCAR. B is wrong — MNAR requires missingness to be related to the UNOBSERVED values specifically; MAR is missingness related to OBSERVED variables. C is correct — missingness systematically related to OBSERVED data (baseline depression, SES) = MAR. D is wrong — while the concept of informative censoring applies in survival analysis, the correct technical classification is MAR."},
+
+// 37 — D
+{tag:"Confirmatory Factor Analysis",text:"A researcher conducts confirmatory factor analysis (CFA) to test whether a 12-item resilience scale has a theoretically proposed three-factor structure (personal competence, acceptance of self/life, and spiritual influences). She constrains one factor loading per factor to 1.0 for identification. Modification indices suggest adding a correlated residual between items 4 and 7. Before adding this correlated residual, she should:",
+options:["Add all correlated residuals suggested by modification indices simultaneously, because sequential addition of parameters underestimates the total model improvement available when multiple residuals are freed and introduces capitalization on chance.",
+"Reject the three-factor model immediately and switch to exploratory factor analysis, because modification index suggestions indicate that the theoretical model is fundamentally incorrect and an exploratory approach is required to identify the correct structure.",
+"Report the original theoretically specified model fit indices without any modifications, because any post-hoc model adjustments based on modification indices are methodologically impermissible and constitute data dredging regardless of substantive justification.",
+"Evaluate whether there is a substantive theoretical rationale for this correlated residual (e.g., item wording overlap, shared method variance, or a specific content overlap between items 4 and 7) — adding correlated residuals solely to improve model fit, without theoretical justification, constitutes post-hoc model fishing that capitalizes on chance."],
+answer:3,
+explanation:"Modification indices in CFA identify areas where model misfit can be reduced by freeing additional parameters. However, post-hoc model modifications based solely on statistical criteria (without theoretical justification) constitute data dredging/specification searching that capitalizes on sample-specific characteristics and will not replicate. The appropriate procedure: evaluate substantive justification for each suggested parameter; document post-hoc modifications transparently; ideally validate in an independent sample.",
+keydomain:"CFA; modification indices; model misfit; model specification; cross-validation; theory vs. fit-driven modeling.",
+traps:"Option C overcorrects — post-hoc modifications ARE permissible when theoretically justified and transparently reported; they are not automatically impermissible. The issue is doing it without justification. Option B is too extreme — modification indices don't require abandoning CFA for EFA.",
+whyeach:"A is wrong — adding all MIs simultaneously capitalizes on chance across the full set without individual justification. B is wrong — one substantive MIs doesn't invalidate the entire theoretical framework or require abandoning CFA. C is wrong — post-hoc modifications ARE permissible when theoretically justified; they are not categorically impermissible. D is correct — evaluate theoretical justification before adding parameters; document transparently."},
+
+// 38 — B
+{tag:"Experimental Designs",text:"A researcher randomly assigns 60 participants to receive either mindfulness-based stress reduction (MBSR) or progressive muscle relaxation (PMR) for chronic pain. Participants complete pain intensity ratings at pre-, post-, and 3-month follow-up. The researcher uses a 2 (condition) × 3 (time) mixed-design ANOVA. The error terms for the between-subjects effect (condition) and the within-subjects effect (time) are different. Why?",
+options:["The between-subjects error term is larger than the within-subjects error term because between-subjects designs include individual differences in the error variance, and this inflation is corrected by the repeated-measures partial out of individual difference variance.",
+"The between-subjects effect (condition) is tested against between-persons error variance (differences among individuals assigned to different groups, capturing all stable individual differences that make people different from each other), while the within-subjects effect (time) is tested against within-persons × condition interaction error (individual differences in rate of change), which is typically smaller because stable individual differences are partialled out.",
+"Both effects are tested against the same pooled error term in mixed ANOVA; the apparent difference in error terms reflects only the different degrees of freedom associated with the between-subjects and within-subjects factors.",
+"The within-subjects effect requires a larger error term than the between-subjects effect because individual differences in response to time-varying stimuli are more variable than individual differences between independently assigned conditions."],
+answer:1,
+explanation:"In mixed ANOVA, error terms are partitioned: (1) Between-subjects effects (Condition) use between-persons MS error — variance among participants assigned to different groups, including all stable individual differences; (2) Within-subjects effects (Time) and the interaction use within-persons MS error — residual variance after removing stable between-person differences. Within-person error is typically SMALLER, explaining why repeated-measures designs are more powerful for detecting within-subjects effects.",
+keydomain:"Mixed ANOVA; error terms; between-subjects vs. within-subjects error; partition of variance; repeated measures power.",
+traps:"Option C is incorrect — between-subjects and within-subjects effects in mixed ANOVA use different error terms. This is a fundamental feature of mixed designs and the source of their power advantage for within-subjects effects.",
+whyeach:"A is partially true about individual differences in the error but doesn't fully explain WHY the error terms differ. B is correct — between-subjects error captures all stable individual differences; within-subjects error has these partialled out. C is wrong — mixed ANOVA uses different error terms for between and within effects, not a pooled error term. D is wrong — within-subjects error is typically SMALLER (not larger) than between-subjects error due to removal of stable individual differences."},
+
+// 39 — A
+{tag:"Publication Bias",text:"A researcher conducts a systematic review and finds 28 published studies and 4 unpublished studies on the efficacy of a specific treatment. The published studies show a mean effect size of d = 0.65, while the unpublished studies show d = 0.18. A funnel plot is asymmetric, with smaller studies concentrated on the right side of the plot. These findings collectively suggest:",
+options:["Publication bias: statistically significant, larger-effect studies are disproportionately published while null or small-effect studies remain unpublished, inflating the apparent efficacy of the treatment in published literature — a pattern consistent with the asymmetric funnel plot and the discrepancy between published and unpublished effect sizes.",
+"Reporting bias: the unpublished studies used inferior methodology (reflected in their small sample sizes) that produced attenuated effect size estimates, while the published studies used methodologically superior designs — making the published effect sizes more accurate and the unpublished studies appropriately filtered by peer review.",
+"Heterogeneity: the large discrepancy between published (d=0.65) and unpublished (d=0.18) effect sizes constitutes high between-study variance (I²), and the funnel plot asymmetry indicates genuine between-study heterogeneity rather than publication bias.",
+"Selective outcome reporting: researchers with null findings selectively reported secondary outcomes instead of primary outcomes, and the funnel plot asymmetry reflects differences in outcome selection rather than selective study publication."],
+answer:0,
+explanation:"The constellation of evidence — (1) published d=0.65 vs. unpublished d=0.18; (2) asymmetric funnel plot with small studies concentrated on one side — is classic evidence for publication bias (the 'file drawer problem'). Published literature overrepresents positive/significant findings; unpublished studies have smaller, non-significant effects. This inflates apparent treatment efficacy. Trim-and-fill and Egger's test quantify publication bias in meta-analysis.",
+keydomain:"Publication bias; file drawer problem; funnel plot; meta-analysis; Egger's test; trim-and-fill.",
+traps:"Option C misidentifies publication bias as heterogeneity — I² and Q test heterogeneity within a body of literature; funnel plot asymmetry with published/unpublished discrepancy is publication bias, not heterogeneity. Don't confuse these.",
+whyeach:"A is correct — published/unpublished discrepancy + funnel asymmetry = publication bias signature. B is wrong — peer review filters for methodology but this doesn't explain the systematic direction of effect size differences (published >> unpublished). C is wrong — heterogeneity (I²) is between-study variance within a meta-analysis; the pattern described is specifically publication bias. D is wrong — selective outcome reporting is a real bias but doesn't explain the published/unpublished study discrepancy pattern."},
+
+// 40 — C
+{tag:"Reliability",text:"A research team uses an observational coding system to classify therapist interventions as (1) supportive, (2) interpretive, (3) behavioral, or (4) other. Ten randomly selected therapy sessions are independently coded by two raters. Agreement between raters is calculated. The researcher uses Cohen's kappa (κ = .68). Which of the following MOST accurately interprets this finding?",
+options:["κ = .68 indicates 68% agreement between raters, which is equivalent to the percentage agreement statistic and demonstrates moderate reliability that exceeds chance agreement by 68 percentage points.",
+"κ = .68 indicates that 68% of the rater disagreements are attributable to random error rather than systematic disagreement, suggesting that the raters share a common conceptual framework for most intervention types.",
+"κ = .68 represents the agreement between raters ABOVE AND BEYOND CHANCE: it is the proportion of cases that could have been agreed upon (after removing chance agreement) that were actually agreed upon — typically interpreted as 'substantial' agreement (Landis & Koch: .61–.80 = substantial).",
+"κ = .68 indicates that 68% of the total variance in rater judgments is attributable to the true differences between therapy session types rather than to rater inconsistency, making it directly equivalent to an intraclass correlation coefficient."],
+answer:2,
+explanation:"Cohen's kappa corrects for chance agreement: κ = (P_observed − P_chance) / (1 − P_chance). κ = .68 means 68% of the POSSIBLE beyond-chance agreements were achieved. Landis & Koch benchmarks: κ < .20 (slight), .21-.40 (fair), .41-.60 (moderate), .61-.80 (substantial), .81-1.0 (almost perfect). κ = .68 = substantial agreement. Kappa is NOT equivalent to percent agreement (ignores chance) or to ICC (different formula and assumptions).",
+keydomain:"Cohen's kappa; interrater reliability; beyond-chance agreement; Landis & Koch benchmarks; categorical data reliability.",
+traps:"Option A confuses kappa with simple percentage agreement — kappa corrects for chance; 68% agreement is NOT what kappa=.68 means. Option D equates kappa with ICC — they are both interrater reliability measures but for different data types (kappa for nominal, ICC for continuous) and have different formulas.",
+whyeach:"A is wrong — κ ≠ percentage agreement; kappa corrects for chance agreement. B is wrong — kappa measures beyond-chance agreement, not proportion of disagreement from random error. C is correct — κ = proportion of possible beyond-chance agreement achieved; .68 = substantial agreement. D is wrong — kappa is for nominal/categorical data; ICC is for continuous ratings; they are not equivalent formulations."},
+
+// 41 — D
+{tag:"Linear vs Non-linear",text:"A researcher plots the relationship between therapy session number (1–20) and client-rated working alliance scores. The scatterplot reveals a curvilinear (inverted-U) relationship: alliance increases from sessions 1–8, peaks around sessions 8–10, then gradually decreases toward session 20. A Pearson correlation of r = .08 (p = .43) is computed. Which of the following is the MOST appropriate interpretation?",
+options:["The near-zero Pearson correlation confirms that therapeutic alliance is stable across sessions and does not vary as a function of treatment progression, consistent with the trait-like stability model of alliance proposed by Bordin.",
+"The non-significant p-value indicates insufficient statistical power to detect the linear trend; increasing the sample size would likely reveal a significant positive linear correlation between session number and alliance ratings.",
+"The Pearson r of .08 accurately represents the effect size for the relationship between session number and alliance, and should be squared (r² = .0064) to compute the proportion of variance in alliance scores explained by session number.",
+"The near-zero Pearson r does NOT indicate absence of a relationship; it reflects the failure of a LINEAR statistic to capture the CURVILINEAR (inverted-U) relationship visible in the plot — a polynomial regression or eta statistic would better capture the nonlinear relationship."],
+answer:3,
+explanation:"Pearson r measures LINEAR association. A perfect inverted-U relationship produces r ≈ 0 because the positive and negative portions cancel. The scatterplot reveals a meaningful curvilinear relationship that Pearson r cannot detect. Appropriate analysis: polynomial regression (adding quadratic term: session²), or correlation ratio (eta, η). The near-zero r does not mean no relationship — it means no LINEAR relationship.",
+keydomain:"Pearson correlation limitations; curvilinear relationships; eta statistic; polynomial regression; linear vs. nonlinear association.",
+traps:"Option A (stability/trait model) is the most seductive trap — it takes the near-zero r at face value. The scatterplot explicitly shows a curvilinear pattern, which means the linear index is inappropriate. Always inspect scatterplots before interpreting correlations.",
+whyeach:"A is wrong — the near-zero r reflects failure of the linear statistic to capture the curvilinear pattern, not stability of alliance. B is wrong — a larger sample would detect the linear component more precisely, not reveal a linear trend that contradicts the visible curvilinear pattern. C is wrong — squaring a linear statistic that cannot capture the pattern does not yield a meaningful variance-explained estimate. D is correct — r≈0 ≠ no relationship when the pattern is curvilinear; polynomial regression or eta needed."},
+
+// 42 — B
+{tag:"Time Series",text:"A researcher conducts an interrupted time series (ITS) analysis on statewide opioid overdose mortality rates from 2010–2020. A prescription drug monitoring program (PDMP) was implemented in 2015. The analysis models both a change in LEVEL (immediate step change at 2015) and a change in SLOPE (change in trend after 2015). Results show: immediate level change = −12.3 deaths/100K (p < .01); slope change = −0.8 deaths/100K per year (p = .08). How should these findings be interpreted?",
+options:["Both parameters indicate effective policy impact: the immediate level change is significant, proving the PDMP caused a reduction in overdose mortality; the non-significant slope change (p=.08) should be disregarded because it reflects an independent, separate causal mechanism from the level change.",
+"There was an immediate, statistically significant reduction of ~12.3 deaths/100,000 following PDMP implementation (level change), suggesting an abrupt policy effect. The additional gradual downward trend in slope (−0.8/year) was not statistically significant at conventional thresholds — though the magnitude may represent a policy-relevant trend worth monitoring. The design cannot establish causation without ruling out concurrent confounds (secular trends, other policies implemented simultaneously).",
+"The significant level change and non-significant slope change together prove that the PDMP had a temporary but not sustained effect, and therefore the policy should be discontinued due to evidence of diminishing returns in overdose prevention.",
+"The p-value for the slope change (p=.08) is close enough to .05 to be interpreted as significant using the Type II error tolerance criteria; therefore, both parameters should be reported as statistically significant effects of the PDMP."],
+answer:1,
+explanation:"ITS analysis correctly separates level change (immediate step) from slope change (gradual trend alteration). Level change: significant (p<.01), interpret as meaningful immediate reduction. Slope change: p=.08, non-significant at α=.05 but shows a downward trend that may be clinically meaningful — report with appropriate nuance. Causation cannot be fully established without ruling out concurrent events (history threat). ITS is quasi-experimental with specific alternative explanation threats.",
+keydomain:"Interrupted time series; level vs. slope change; ITS interpretation; quasi-experimental causal inference; history threats.",
+traps:"Option D makes the error of treating p=.08 as approximately significant — 'close to .05' does not constitute statistical significance at the conventional threshold. Option C incorrectly concludes policy discontinuation from a pattern of level-not-slope significance.",
+whyeach:"A is wrong — 'proving causation' from ITS is too strong; history threats remain; also, slope and level changes are NOT independent causal mechanisms. B is correct — significant level change (abrupt effect), non-significant slope change (trend not confirmed), with appropriate causation caveat. C is wrong — non-significant slope doesn't mean temporary effect; the level change suggests sustained step-down. D is wrong — p=.08 does not meet conventional significance threshold; this is the Mulaik/near-significance fallacy."},
+
+// 43 — A
+{tag:"Multitrait-Multimethod",text:"Campbell and Fiske (1959) proposed the multitrait-multimethod (MTMM) matrix as a framework for evaluating construct validity. The matrix examines correlations among multiple traits measured by multiple methods. Identifying 'method effects' or 'method bias' in the MTMM matrix requires examining which specific pattern of correlations?",
+options:["If correlations among different traits measured by the SAME method (heterotrait-monomethod correlations) are substantially higher than correlations among the same traits measured by DIFFERENT methods (monotrait-heteromethod correlations, i.e., convergent validity coefficients), this suggests that method variance inflates within-method correlations beyond the true construct-level relationships.",
+"If correlations among the same trait measured by the same method (monotrait-monomethod, i.e., coefficient alpha) exceed all other correlations in the matrix, this indicates that internal consistency is the primary source of convergent validity and method effects are absent.",
+"If the diagonal values of the MTMM matrix (convergent validity coefficients) are all equal to 1.0, this indicates perfect method independence — the gold standard for convergent validity as defined by Campbell and Fiske's original criterion.",
+"Method effects are identified when the correlation between two different traits measured by two different methods exceeds the correlation between two different traits measured by the same method, indicating that method similarity artificially suppresses cross-method correlations."],
+answer:0,
+explanation:"Method effects (mono-method bias) in MTMM: if hetero-trait, MONO-method correlations (different constructs, same method) are HIGH relative to MONO-trait, hetero-method correlations (same construct, different methods), this suggests that method variance is inflating within-method correlations. Traits assessed by the same method 'look more similar' because of shared method variance rather than true construct overlap. This is a method artifact, not a substantive finding.",
+keydomain:"MTMM matrix; Campbell & Fiske; method effects; convergent validity; discriminant validity; mono-method bias.",
+traps:"The MTMM matrix has a complex terminology: monotrait-heteromethod (convergent validity), heterotrait-monomethod (method effects), heterotrait-heteromethod (discriminant validity across methods). Students mix up these blocks. Know WHICH comparisons indicate WHICH type of validity/bias.",
+whyeach:"A is correct — heterotrait-monomethod > monotrait-heteromethod = method effects inflating within-method correlations. B is wrong — alpha (internal consistency) is not a component of the MTMM matrix and is not what tests for method effects. C is wrong — diagonal values are the convergent validity coefficients; they cannot literally equal 1.0 and this is not the MTMM method-effect test. D is wrong — this reverses the correct comparison for identifying method effects."},
+
+// 44 — C
+{tag:"Bias in Research",text:"A researcher studying the relationship between race and cognitive test performance wishes to ensure that race is operationalized as a social construct rather than a biological category. She uses self-identified race (5 categories: Black, white, Asian, Hispanic/Latino, other) as the operational definition. A methodological concern specific to this operationalization is:",
+options:["Using self-identified race violates APA Publication Manual requirements, which mandate that race be coded using census-defined biological categories to ensure comparability across studies and longitudinal tracking of demographic change.",
+"Self-identified race operationalization introduces expectancy effects because participants who know they belong to a stereotyped group will perform more poorly on cognitive tests, regardless of actual cognitive ability differences, making the variable impossible to study.",
+"The five-category classification system treats race as a homogeneous within-category experience, potentially obscuring substantial heterogeneity WITHIN racial categories (e.g., ethnic/national origin differences within 'Asian,' diverse experiences within 'Black'), and risks conflating racial identification with racial category membership and lived experiences of racism.",
+"Self-identified race cannot be used as an independent variable in regression analysis because nominal variables with more than two categories require transformation into binary dummy codes, which eliminates the validity of the racial categorization."],
+answer:2,
+explanation:"Operationalizing race as self-identified categories creates within-category heterogeneity problems: 'Asian' encompasses Korean, Filipino, Chinese, South Asian, etc. — vastly different experiences, cultural backgrounds, immigration histories. More critically, these categories may conflate racial identity (a psychological construct) with racial categorization (a social/administrative construct) and exposure to racism. This is a substantive methodological and conceptual challenge, not just an administrative issue.",
+keydomain:"Operationalization; race as social construct; within-category heterogeneity; research with racial/ethnic groups; methodological issues in diversity research.",
+traps:"Option B describes stereotype threat (real phenomenon) but claims it makes the variable 'impossible to study' — a vast overclaim that ignores the large methodological literature on studying race and cognition. Option D is wrong — dummy coding is the standard method for nominal variables in regression; this is not a validity problem.",
+whyeach:"A is wrong — APA does not mandate biological racial categories; APA advocates for person-first language and appropriate racial/ethnic operationalization. B is wrong — stereotype threat is real but does not make racial variables impossible to study. C is correct — within-category heterogeneity and conflation of identity/categorization/experience are real operationalization concerns. D is wrong — dummy coding is standard and does not eliminate validity of the racial variable."},
+
+// 45 — D
+{tag:"Regression",text:"A researcher uses simple linear regression to predict therapy outcome (Y) from therapeutic alliance (X). The regression equation is: Ŷ = 42.3 + 3.8X. A participant has an alliance score of 6.0 and an actual outcome score of 65. The residual (e) for this participant is:",
+options:["The residual cannot be computed without knowing the standard error of the estimate (SEE), which is required to convert raw prediction errors into standardized units appropriate for individual case-level interpretation.",
+"e = 65 − 42.3 = 22.7, computed by subtracting the intercept (constant) from the observed score, representing the portion of the outcome not attributable to the regression equation's baseline prediction.",
+"e = 3.8 × 6.0 = 22.8, computed by multiplying the predictor by the regression slope to determine how much alliance contributes to the predicted outcome, with the residual representing the total alliance contribution.",
+"e = 65 − (42.3 + 3.8 × 6.0) = 65 − 65.1 = −0.1, computed as the observed score minus the predicted score (Ŷ); a residual near zero indicates this participant's outcome was almost perfectly predicted by their alliance score."],
+answer:3,
+explanation:"Residual = Observed − Predicted. Predicted Ŷ = 42.3 + 3.8(6.0) = 42.3 + 22.8 = 65.1. Residual = 65 − 65.1 = −0.1. The near-zero residual indicates this participant's actual outcome was nearly identical to the model's prediction. Residuals are the building blocks of R², MSE, and regression diagnostics.",
+keydomain:"Residuals; regression equation; predicted values; observed vs. predicted; regression diagnostics.",
+traps:"Option B uses only the intercept (not the full prediction equation) — this is incorrect. Options A and C misapply components of the regression equation. The residual is always: e = Y_observed − Y_predicted = Y − (b₀ + b₁X).",
+whyeach:"A is wrong — residuals can be computed directly from the equation without SEE; SEE is relevant for prediction intervals, not individual residuals. B is wrong — subtracting only the intercept from observed score omits the contribution of the predictor term. C is wrong — 3.8 × 6.0 is the predictor contribution to Ŷ, not the residual. D is correct — e = 65 − 65.1 = −0.1; predicted = 42.3 + 22.8 = 65.1."},
+
+// 46 — A
+{tag:"Causal Inference",text:"Pearl's do-calculus and the potential outcomes framework (Rubin causal model) both provide formal frameworks for causal inference from observational data. A researcher wishes to estimate the causal effect of antidepressant use on cognitive functioning in a large clinical database. Which design/analytical strategy MOST closely approximates the gold standard of a randomized experiment in this observational context?",
+options:["Propensity score matching or weighting: estimating the probability of antidepressant use from observed covariates, then matching or weighting treated and untreated cases to create a pseudo-experimental comparison group balanced on observed confounders — reducing selection bias attributable to measured variables.",
+"Cross-lagged panel analysis: using two time points to establish temporal precedence between antidepressant use and cognitive functioning, which satisfies the temporal precedence requirement for causal inference and is equivalent to randomization in longitudinal designs.",
+"Multivariate regression with comprehensive covariate control: entering all available demographic and clinical covariates simultaneously in a regression model, with each covariate controlling for its observed confounding role — providing causal estimates equivalent to randomization when all confounders are measured.",
+"Correlation-based power analysis: using the observed correlation between antidepressant use and cognitive functioning to estimate the sample size required for a definitive RCT — providing a causal effect estimate pending the gold standard trial."],
+answer:0,
+explanation:"Propensity score methods (PSM, IPW, IPTW): estimate the probability (propensity) of treatment from observed covariates, then match or weight cases to create comparable treated/untreated groups on measured confounders. This approximates the counterfactual comparison of an RCT for measured confounders. Limitation: cannot control unmeasured confounders. Other quasi-experimental methods (IV analysis, regression discontinuity) address unmeasured confounding but weren't listed.",
+keydomain:"Propensity score matching; causal inference; observational studies; counterfactual framework; selection bias; Rubin causal model.",
+traps:"Option C (comprehensive covariate control in regression) is the naive approach — standard regression controls for covariates' main effects but doesn't ensure covariate balance the way propensity score matching does, and estimates average effects across a potentially non-overlapping covariate distribution.",
+whyeach:"A is correct — propensity score methods create pseudo-experimental comparisons balanced on observed confounders. B is wrong — cross-lagged panels establish temporal ordering but don't control for confounders; temporal precedence ≠ randomization. C is wrong — covariate adjustment in regression doesn't ensure common support (overlapping covariate distributions) or balance the way PSM does. D is wrong — this is sample size planning for a future RCT, not a causal analysis strategy for existing observational data."},
+
+// 47 — C
+{tag:"Regression Discontinuity",text:"A school district uses a standardized reading test to determine eligibility for a remedial reading intervention. Students scoring below 40 (out of 100) receive the intervention; students scoring ≥ 40 do not. A researcher uses this to evaluate the causal effect of the intervention on 6th-grade reading scores. This design is a:",
+options:["Dose-response analysis, because the continuous reading test score represents a graduated dose of reading proficiency that is being used to predict the intervention's effectiveness across the full range of reading ability levels in the population.",
+"Regression discontinuity design (RDD) — a quasi-experimental design that exploits a sharp threshold (cutoff = 40) in the assignment variable (test score) to estimate a local average treatment effect for students near the cutoff, under the assumption that students just below and just above the cutoff are comparable in all other respects.",
+"Regression discontinuity design (RDD) — specifically a sharp RDD — wherein the probability of treatment assignment changes discontinuously at the cutoff score, allowing estimation of the causal effect of the intervention by comparing outcomes for students just below and just above the cutoff.",
+"A natural experiment, because the assignment rule (below vs. above 40) was determined by district policy rather than experimental randomization — making it an administrative intervention study where the treatment effect can be estimated through simple comparison of means between below-40 and above-40 groups."],
+answer:2,
+explanation:"Sharp RDD: assignment to treatment is a deterministic function of a continuous forcing variable (reading test score) crossing a sharp cutoff (40). At the cutoff, students are locally comparable (just below = just above in expectation on all other characteristics). The RDD estimates a LOCAL average treatment effect (LATE) at the cutoff — the causal effect specifically for students near the threshold. Validity assumption: no manipulation of scores at the cutoff.",
+keydomain:"Regression discontinuity design; sharp RDD; forcing variable; cutoff; local average treatment effect; quasi-experimental designs.",
+traps:"Option B is also correct in naming it an RDD but is weaker in specifying the key features. The SHARP distinction (probability of treatment changes from 0 to 1 at the cutoff, not gradually) is the specific type being described here. Option D (natural experiment + simple mean comparison) is wrong — simple mean comparison of all below vs. above-cutoff students conflates RDD logic with selection bias.",
+whyeach:"A is wrong — dose-response is about gradients of treatment intensity, not threshold-based assignment. B is correct but incomplete — doesn't specify 'sharp' RDD, the key feature here. C is correct — sharp RDD with deterministic probability change at cutoff; estimates LATE at the cutoff. D is wrong — simple mean comparison of all below vs. above-40 students would introduce selection bias; RDD specifically uses the LOCAL comparison near the cutoff."},
+
+// 48 — D
+{tag:"Multilevel Modeling",text:"A researcher studies the effectiveness of school-based mental health programs by collecting depression scores from 1,200 students nested within 60 schools. Schools vary in their program quality. She uses multilevel modeling (MLM/HLM) instead of standard OLS regression. The PRIMARY statistical justification for this choice is:",
+options:["MLM is preferred because it can incorporate both categorical and continuous predictors simultaneously, whereas OLS regression can only accommodate continuous predictors without separate modules for handling dummy-coded variables.",
+"MLM provides more statistically significant results than OLS regression in nested designs by partitioning variance into between-group and within-group components, which artificially increases the degrees of freedom available for hypothesis testing.",
+"MLM allows the researcher to model school-level predictors (program quality) as moderators of individual-level effects without requiring the creation of product terms, which avoids the multicollinearity that would result from cross-level interaction terms in OLS regression.",
+"Students nested within schools violate OLS regression's independence assumption — students in the same school are more similar to each other than to students in other schools (intraclass correlation > 0), inflating Type I error in OLS; MLM correctly accounts for this dependency through the hierarchical error structure."],
+answer:3,
+explanation:"The fundamental problem with applying OLS to nested data: the independence of observations assumption is violated because students in the same school share environmental factors (same teachers, same curriculum, same school climate), creating dependency — their observations are not independent. This inflates effective sample size, deflates standard errors, and inflates Type I error. MLM partitions variance into within-school (Level 1) and between-school (Level 2) components, correctly modeling the dependency via intraclass correlation (ICC).",
+keydomain:"Multilevel modeling; HLM; nested data; independence assumption; intraclass correlation; Type I error inflation.",
+traps:"Option B claims MLM provides more significant results — this is partially true (OLS underestimates SEs for between-group effects) but frames it as an advantage rather than accuracy. Option C describes a real MLM capability (cross-level interactions) but is not the PRIMARY justification.",
+whyeach:"A is wrong — OLS can handle categorical predictors via dummy coding; this is not a limitation of OLS vs. MLM. B is wrong — MLM provides ACCURATE (not artificially inflated) significance tests; OLS inflates Type I error for between-group effects. C is wrong — cross-level interactions are possible in OLS with product terms; this is a secondary advantage. D is correct — ICC > 0 in nested data violates OLS independence assumption, inflating Type I error; MLM corrects for this."},
+
+// 49 — B
+{tag:"Replication Crisis",text:"The Reproducibility Project: Psychology (Open Science Collaboration, 2015) attempted to replicate 100 published psychology studies. The findings are considered foundational to understanding the replication crisis. Which of the following MOST accurately summarizes the project's key findings?",
+options:["All 100 studies were successfully replicated with effect sizes within sampling error of the original, validating the robustness of psychological science but revealing that publication bias inflates apparent effect sizes by approximately 25% on average.",
+"Approximately 36–39% of attempted replications produced a statistically significant result in the same direction as the original, and mean effect sizes of replications were approximately half those of the original studies — raising fundamental concerns about publication bias, underpowered original studies, and methodological flexibility (p-hacking).",
+"Approximately 80% of studies replicated successfully, but the 20% failure rate was attributable entirely to inadequate sample sizes in the replication attempts rather than to problems with the original findings.",
+"The project found that only studies in social psychology failed to replicate, while cognitive psychology studies replicated at 100%, establishing social psychology as the primary source of irreproducible results in the field."],
+answer:1,
+explanation:"OSC (2015): Only ~36-39% of 100 replications produced a statistically significant result in the same direction. Mean effect sizes in replications were approximately half of original study effect sizes. This highlighted: (1) publication bias (originally published positives overrepresented); (2) underpowered original studies (winner's curse inflates effects); (3) researcher degrees of freedom/p-hacking; (4) contextual moderators changing effects. This project catalyzed reforms: pre-registration, power analysis standards, open data.",
+keydomain:"Replication crisis; OSC reproducibility project; pre-registration; publication bias; researcher degrees of freedom; p-hacking.",
+traps:"Options A and C dramatically overstate replication success. Option D incorrectly claims 100% cognitive replication — cognitive studies did replicate at higher rates than social, but not at 100%, and this oversimplification misrepresents the findings.",
+whyeach:"A is wrong — far fewer than 100 studies replicated; the project revealed substantial problems with original effect sizes. B is correct — ~36-39% replication rate; effect sizes approximately halved; fundamental methodological concerns identified. C is wrong — 80% replication is a dramatic overstatement; failure was not attributable solely to replication sample size. D is wrong — cognitive studies did replicate at higher rates but not 100%; social psychology's complete failure rate is an oversimplification."},
+
+// 50 — C
+{tag:"Structural Equation Modeling",text:"A researcher proposes a full mediation model: childhood adversity (X) → attachment anxiety (M) → depression (Y), with no direct path from X to Y. When she compares the constrained model (no direct X→Y path) to a free model (with X→Y path included), the chi-square difference test yields Δχ²(1) = 0.42, p = .52. The CFI of the constrained model is .94, RMSEA = .055. Which of the following is the MOST appropriate conclusion?",
+options:["The model must be rejected because the chi-square test is never appropriate for comparing nested SEM models; only the AIC and BIC should be used for model selection, and without significant AIC/BIC improvement the constrained model is disconfirmed.",
+"Full mediation is disproven because the non-significant chi-square difference test indicates that removing the direct path significantly worsened model fit, and therefore the direct path (X→Y) must be retained in the final model.",
+"The constrained (full mediation) model provides adequate fit to the data (CFI = .94, RMSEA = .055), and the non-significant Δχ²(1) = 0.42 indicates that adding the direct X→Y path does NOT significantly improve fit — supporting the full mediation model as parsimonious and consistent with the data.",
+"The full mediation hypothesis is supported only if the indirect path (a×b) is statistically significant via bootstrapping; the chi-square difference test result is irrelevant to mediation testing and should not be interpreted in this context."],
+answer:2,
+explanation:"Nested model comparison: the constrained model (full mediation, no direct path) vs. free model (partial mediation, includes direct path). Non-significant Δχ²(1) = 0.42 (p=.52) means adding the direct path does NOT significantly improve fit — the more parsimonious constrained model is not significantly worse. Plus, CFI=.94 and RMSEA=.055 are acceptable. Conclusion: data are consistent with full mediation, and adding the direct path is not warranted. Note: this doesn't prove full mediation — absence of evidence ≠ evidence of absence.",
+keydomain:"SEM model comparison; nested models; chi-square difference test; full vs. partial mediation; parsimony.",
+traps:"Option B reverses the interpretation — non-significant Δχ² means the constrained model is NOT significantly WORSE, supporting parsimony. It does NOT mean removing the path worsened fit significantly. The logic of chi-square difference tests: significance = free model fits significantly better; non-significance = constrained model is adequate.",
+whyeach:"A is wrong — chi-square difference test IS the appropriate method for nested model comparison in SEM; AIC/BIC are alternatives for non-nested models. B is wrong — non-significant Δχ² means the constrained model is NOT significantly worse, not that it worsened fit. C is correct — non-significant Δχ² + acceptable fit of constrained model = full mediation is parsimonious and consistent. D is wrong — bootstrapped indirect effects and Δχ² tests address different questions; both are relevant to mediation testing."}
+];
+
+// ════════════════════════════════════════════════════════
+// MULTIPLAYER ENGINE — fixed & robust
+// ════════════════════════════════════════════════════════
+
+const COLORS = [
+  {bg:'#818cf8', text:'#0d0f1f'},
+  {bg:'#38bdf8', text:'#021a2a'},
+  {bg:'#fb7185', text:'#2a000c'},
+  {bg:'#2dd4bf', text:'#00201e'},
+];
+const LTR = ['A','B','C','D'];
+
+let state = {
+  sessionCode: '',
+  playerName: '',
+  playerIndex: -1,
+  threshold: 2,
+  currentQ: 0,
+  phase: 'lobby'   // lobby | waiting | quiz | results
+};
+let pollInterval = null;
+let lastData = null;
+let lastDataStr = '';
+
+// ── LOBBY ──────────────────────────────────────────────
+function generateCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let c = '';
+  for (let i = 0; i < 6; i++) c += chars[Math.floor(Math.random() * chars.length)];
+  document.getElementById('sessionCode').value = c;
+  checkReady();
+}
+
+function setThreshold(n) {
+  state.threshold = n;
+  document.querySelectorAll('.count-btn').forEach((b, i) => b.classList.toggle('active', i + 1 === n));
+  checkReady();
+}
+
+function checkReady() {
+  const nm = document.getElementById('playerName').value.trim();
+  const cd = document.getElementById('sessionCode').value.trim();
+  document.getElementById('startBtn').disabled = !nm || !cd;
+}
+
+document.getElementById('playerName').addEventListener('input', checkReady);
+document.getElementById('sessionCode').addEventListener('input', function () {
+  this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+  checkReady();
+});
+
+async function joinSession() {
+  const name = document.getElementById('playerName').value.trim();
+  const code = document.getElementById('sessionCode').value.trim().toUpperCase();
+  if (!name || !code) return;
+
+  const btn = document.getElementById('startBtn');
+  btn.disabled = true;
+  btn.textContent = 'CONNECTING...';
+
+  state.playerName = name;
+  state.sessionCode = code;
+
+  // Load or create session
+  let data = await storageGet('sr:' + code);
+
+  if (!data) {
+    // First player — create session
+    data = {
+      players: [{ name, answers: new Array(50).fill(null), online: Date.now() }],
+      threshold: state.threshold,
+      started: false
+    };
+    state.playerIndex = 0;
+  } else {
+    // Joining existing session
+    const ei = data.players.findIndex(p => p.name === name);
+    if (ei >= 0) {
+      // Reconnecting
+      state.playerIndex = ei;
+      state.threshold = data.threshold;
+      data.players[ei].online = Date.now();
+    } else if (data.players.length >= 4) {
+      toast('SESSION FULL (max 4 players)');
+      btn.disabled = false;
+      btn.textContent = 'ENTER SESSION →';
+      return;
+    } else {
+      // New player joining
+      state.playerIndex = data.players.length;
+      state.threshold = data.threshold;
+      data.players.push({ name, answers: new Array(50).fill(null), online: Date.now() });
+    }
+  }
+
+  const ok = await storageSave('sr:' + code, data);
+  if (!ok) {
+    toast('CONNECTION ERROR — try again');
+    btn.disabled = false;
+    btn.textContent = 'ENTER SESSION →';
+    return;
+  }
+
+  lastData = data;
+  lastDataStr = JSON.stringify(data);
+
+  // Go to waiting room
+  showScreen('waitingRoom');
+  document.getElementById('wr_code').textContent = code;
+  document.getElementById('wr_threshold').textContent = data.threshold;
+  document.getElementById('hdrCode').textContent = code;
+
+  // If session already started, go straight to quiz
+  if (data.started) {
+    showScreen('quizScreen');
+    document.getElementById('hdrSubtitle').textContent = `${code} · ${name}`;
+    renderQ();
+  } else {
+    renderWaitingRoom(data);
+  }
+
+  startPoll();
+}
+
+function renderWaitingRoom(data) {
+  if (!data) return;
+  document.getElementById('wr_count').textContent = data.players.length + '/4';
+  document.getElementById('wr_threshold').textContent = data.threshold;
+  document.getElementById('wr_players').innerHTML = data.players.map((p, pi) => {
+    const c = COLORS[pi % COLORS.length];
+    const isMe = pi === state.playerIndex;
+    const fresh = (Date.now() - (p.online || 0)) < 15000;
+    return `<div style="display:flex;align-items:center;gap:10px;background:var(--card2);border:1px solid ${isMe ? 'var(--indigo)' : 'var(--border)'};border-radius:8px;padding:10px 14px">
+      <div style="width:32px;height:32px;border-radius:6px;background:${c.bg};color:${c.text};display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:0.9rem;flex-shrink:0">${p.name.charAt(0)}</div>
+      <div style="flex:1">
+        <div style="font-size:0.9rem;font-weight:600">${p.name}${isMe ? ' <span style="font-family:\'IBM Plex Mono\',monospace;font-size:0.62rem;color:var(--indigo)">(you)</span>' : ''}</div>
+      </div>
+      <div style="width:8px;height:8px;border-radius:50%;background:${fresh ? 'var(--emerald)' : 'var(--muted)'}"></div>
+    </div>`;
+  }).join('');
+}
+
+async function startQuiz() {
+  if (!lastData) return;
+  const updated = JSON.parse(JSON.stringify(lastData));
+  updated.started = true;
+  await storageSave('sr:' + state.sessionCode, updated);
+  lastData = updated;
+  lastDataStr = JSON.stringify(updated);
+
+  showScreen('quizScreen');
+  document.getElementById('hdrSubtitle').textContent = `${state.sessionCode} · ${state.playerName}`;
+  renderQ();
+}
+
+// ── SCREEN MANAGER ──────────────────────────────────────
+function showScreen(id) {
+  ['lobbyScreen', 'waitingRoom', 'quizScreen', 'resultsScreen'].forEach(s => {
+    const el = document.getElementById(s);
+    if (el) el.style.display = s === id ? (s === 'quizScreen' ? 'block' : s === 'resultsScreen' ? 'block' : 'block') : 'none';
+  });
+  state.phase = id;
+}
+
+// ── STORAGE ─────────────────────────────────────────────
+async function storageGet(key) {
+  try {
+    const r = await window.storage.get(key, true);
+    return r ? JSON.parse(r.value) : null;
+  } catch { return null; }
+}
+
+async function storageSave(key, d) {
+  try {
+    const r = await window.storage.set(key, JSON.stringify(d), true);
+    return !!r;
+  } catch { return false; }
+}
+
+// ── POLLING — always runs, always updates UI ─────────────
+function startPoll() {
+  if (pollInterval) clearInterval(pollInterval);
+  pollInterval = setInterval(async () => {
+    try {
+      const d = await storageGet('sr:' + state.sessionCode);
+      if (!d) return;
+
+      const dStr = JSON.stringify(d);
+      if (dStr === lastDataStr) return; // no change
+
+      lastData = d;
+      lastDataStr = dStr;
+
+      // Handle phase transitions
+      if (state.phase === 'waitingRoom') {
+        renderWaitingRoom(d);
+        if (d.started) {
+          showScreen('quizScreen');
+          document.getElementById('hdrSubtitle').textContent = `${state.sessionCode} · ${state.playerName}`;
+          renderQ();
+        }
+      } else if (state.phase === 'quizScreen') {
+        renderQ();
+        updateSidebar();
+      }
+    } catch (e) { /* network hiccup, ignore */ }
+  }, 1500); // poll every 1.5s for snappier feel
+}
+
+// ── ANSWER SUBMISSION ────────────────────────────────────
+async function selectAnswer(qi, oi) {
+  if (!lastData) return;
+  const me = lastData.players[state.playerIndex];
+  if (!me || me.answers[qi] !== null) return;
+
+  const u = JSON.parse(JSON.stringify(lastData));
+  u.players[state.playerIndex].answers[qi] = oi;
+  u.players[state.playerIndex].online = Date.now();
+
+  // Optimistic update
+  lastData = u;
+  lastDataStr = JSON.stringify(u);
+  renderQ();
+  updateSidebar();
+
+  // Persist
+  const ok = await storageSave('sr:' + state.sessionCode, u);
+  if (!ok) toast('SAVE ERROR — retrying...');
+}
+
+// ── HELPERS ──────────────────────────────────────────────
+function getAnsweredCount(qi) {
+  return lastData ? lastData.players.filter(p => p.answers[qi] !== null).length : 0;
+}
+function shouldReveal(qi) {
+  return getAnsweredCount(qi) >= (lastData ? lastData.threshold : state.threshold);
+}
+function getMyAnswer(qi) {
+  return lastData ? (lastData.players[state.playerIndex]?.answers[qi] ?? null) : null;
+}
+function getMyStats() {
+  if (!lastData) return { correct: 0, answered: 0 };
+  const me = lastData.players[state.playerIndex];
+  if (!me) return { correct: 0, answered: 0 };
+  let c = 0, a = 0;
+  me.answers.forEach((ans, i) => { if (ans !== null) { a++; if (ans === QUESTIONS[i].answer) c++; } });
+  return { correct: c, answered: a };
+}
+
+// ── RENDER QUESTION ──────────────────────────────────────
+function renderQ() {
+  const qi = state.currentQ;
+  const q = QUESTIONS[qi];
+  const myAns = getMyAnswer(qi);
+  const reveal = shouldReveal(qi);
+  const threshold = lastData ? lastData.threshold : state.threshold;
+  const answered = getAnsweredCount(qi);
+  const { correct: myC } = getMyStats();
+
+  // Header
+  document.getElementById('hdrQ').textContent = String(qi + 1).padStart(2, '0');
+  document.getElementById('hdrScore').textContent = myC;
+  document.getElementById('progressFill').style.width = ((qi + 1) / 50 * 100) + '%';
+  document.getElementById('progLeft').textContent = `Q${qi + 1} / 50`;
+  document.getElementById('progRight').textContent = Math.round((qi + 1) / 50 * 100) + '%';
+
+  // Options
+  let optsHTML = '';
+  q.options.forEach((opt, i) => {
+    let cls = 'opt-btn';
+    if (myAns === i) cls += ' selected-mine';
+    if (reveal) {
+      if (i === q.answer) cls += ' correct';
+      else if (myAns === i) cls += ' wrong';
+      else cls += ' neutral-reveal';
+    }
+    let voters = '';
+    if (reveal && lastData) {
+      const vs = lastData.players.filter(p => p.answers[qi] === i);
+      if (vs.length) voters = '<div class="voter-pips">' + vs.map(v => {
+        const pi = lastData.players.indexOf(v);
+        const c = COLORS[pi % COLORS.length];
+        return `<div class="pip" style="background:${c.bg};color:${c.text}">${v.name.charAt(0)}</div>`;
+      }).join('') + '</div>';
+    }
+    const dis = (myAns !== null || reveal) ? 'disabled' : '';
+    optsHTML += `<button class="${cls}" ${dis} onclick="selectAnswer(${qi},${i})">
+      <span class="opt-letter">${LTR[i]}</span>
+      <div class="opt-right"><div>${opt}</div>${reveal ? voters : ''}</div>
+    </button>`;
+  });
+
+  // Waiting bar
+  let waitHTML = '';
+  if (!reveal && lastData) {
+    const need = threshold - answered;
+    const pips = lastData.players.map((p, pi) => {
+      const c = COLORS[pi % COLORS.length];
+      const done = p.answers[qi] !== null;
+      return done
+        ? `<div class="a-pip done" style="background:${c.bg};color:${c.text}">${p.name.charAt(0)}</div>`
+        : `<div class="a-pip waiting" style="border-color:${c.bg};color:${c.bg}">${p.name.charAt(0)}</div>`;
+    }).join('');
+    waitHTML = `<div class="waiting-bar">
+      <p>// waiting for ${need > 0 ? need + ' more answer' + (need !== 1 ? 's' : '') : 'reveal...'}</p>
+      <div class="a-pips">${pips}</div>
+    </div>`;
+  }
+
+  // Feedback
+  let fbHTML = '';
+  if (reveal) {
+    const abHTML = q.options.map((opt, i) => {
+      const ok = i === q.answer;
+      return `<div class="ab-row ${ok ? 'ab-correct' : 'ab-wrong'}">
+        <span class="ab-letter">${LTR[i]}.</span>
+        <span class="ab-text">${opt}</span>
+        <span class="ab-verdict">${ok ? '✓ CORRECT' : '✗ WRONG'}</span>
+      </div>`;
+    }).join('');
+    fbHTML = `<div class="feedback-section">
+      <div class="fb-grid">
+        <div class="fb-card expl"><h4>◈ Explanation</h4><p>${q.explanation}</p></div>
+        <div class="fb-card domain"><h4>◈ Key Domain</h4><p>${q.keydomain}</p></div>
+        <div class="fb-card traps"><h4>◈ Tricks & Traps</h4><p>${q.traps}</p></div>
+        <div class="fb-card why"><h4>◈ Why Each Answer</h4>${abHTML}<p style="margin-top:8px">${q.whyeach}</p></div>
+      </div>
+    </div>`;
+  }
+
+  const isLast = qi === 49;
+  const allDone = lastData && lastData.players.every(p => QUESTIONS.every((_, i) => p.answers[i] !== null));
+
+  document.getElementById('quizMain').innerHTML = `
+    <div class="q-card">
+      <div class="q-meta">
+        <span class="q-num">// Q${qi + 1} OF 50</span>
+        <span class="q-tag">${q.tag.toUpperCase()}</span>
+      </div>
+      <div class="q-text">${q.text}</div>
+      <div class="options">${optsHTML}</div>
+      ${waitHTML}
+      ${fbHTML}
+      <div class="nav-row">
+        <button class="nav-btn" onclick="goTo(${qi - 1})" ${qi === 0 ? 'disabled' : ''}>← PREV</button>
+        <span class="nav-pos">${qi + 1} / 50</span>
+        ${isLast && allDone
+          ? `<button class="nav-btn primary" onclick="showResults()">RESULTS →</button>`
+          : `<button class="nav-btn primary" onclick="goTo(${qi + 1})" ${qi === 49 ? 'disabled' : ''}>NEXT →</button>`}
+      </div>
+    </div>`;
+
+  updateSidebar();
+}
+
+function goTo(i) {
+  if (i < 0 || i > 49) return;
+  state.currentQ = i;
+  renderQ();
+}
+
+// ── SIDEBAR ──────────────────────────────────────────────
+function updateSidebar() {
+  if (!lastData) return;
+  const { correct, answered } = getMyStats();
+
+  // Player list with live status
+  const now = Date.now();
+  document.getElementById('playerList').innerHTML = lastData.players.map((p, pi) => {
+    const c = COLORS[pi % COLORS.length];
+    let s = 0;
+    p.answers.forEach((a, i) => { if (a === QUESTIONS[i].answer) s++; });
+    const isMe = pi === state.playerIndex;
+    const online = (now - (p.online || 0)) < 10000;
+    const answeredQ = lastData.players[pi].answers[state.currentQ] !== null;
+    return `<div class="player-card" style="${isMe ? 'border-color:rgba(129,140,248,0.4)' : ''}">
+      <div class="player-avatar" style="background:${c.bg};color:${c.text}">${p.name.charAt(0)}</div>
+      <div style="flex:1">
+        <div class="player-name">${p.name}${isMe ? ' <span style="font-family:\'IBM Plex Mono\',monospace;font-size:0.6rem;color:var(--indigo)">(you)</span>' : ''}</div>
+        <div class="player-sub">${p.answers.filter(a => a !== null).length}/50 answered${answeredQ ? ' · Q' + (state.currentQ + 1) + ' ✓' : ''}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+        <div class="player-score">${s}</div>
+        <div style="width:7px;height:7px;border-radius:50%;background:${online ? 'var(--emerald)' : 'var(--muted)'}"></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Dot grid
+  document.getElementById('dotGrid').innerHTML = QUESTIONS.map((_, i) => {
+    const me = lastData.players[state.playerIndex];
+    const a = me?.answers[i];
+    const cls = i === state.currentQ ? 'mini-dot mc'
+      : a === null ? 'mini-dot'
+        : a === QUESTIONS[i].answer ? 'mini-dot ac' : 'mini-dot aw';
+    return `<button class="${cls}" onclick="goTo(${i})">${i + 1}</button>`;
+  }).join('');
+
+  // Stats
+  document.getElementById('sbAnswered').textContent = answered;
+  document.getElementById('sbCorrect').textContent = correct;
+  document.getElementById('sbPct').textContent = answered > 0 ? Math.round(correct / answered * 100) + '%' : '—';
+  document.getElementById('sbLeft').textContent = 50 - answered;
+}
+
+// ── RESULTS ──────────────────────────────────────────────
+function showResults() {
+  showScreen('resultsScreen');
+  if (pollInterval) clearInterval(pollInterval);
+  if (!lastData) return;
+  const ranked = lastData.players.map((p, pi) => {
+    let s = 0;
+    p.answers.forEach((a, i) => { if (a === QUESTIONS[i].answer) s++; });
+    return { ...p, score: s, pi };
+  }).sort((a, b) => b.score - a.score);
+  const rcls = ['r1', 'r2', 'r3', 'r4'];
+  document.getElementById('resultsGrid').innerHTML = ranked.map((p, r) => {
+    const c = COLORS[p.pi % COLORS.length];
+    const pct = Math.round(p.score / 50 * 100);
+    return `<div class="result-card ${rcls[r] || 'r4'}">
+      <div class="result-avatar" style="background:${c.bg};color:${c.text}">${p.name.charAt(0)}</div>
+      <div><div class="result-name">${r + 1}. ${p.name}</div><div class="result-sub">${p.score} / 50 correct</div></div>
+      <div class="result-pct">${pct}%</div>
+    </div>`;
+  }).join('');
+}
+
+// ── UTILS ────────────────────────────────────────────────
+function copyCode() {
+  const code = state.sessionCode || document.getElementById('wr_code')?.textContent || '';
+  navigator.clipboard?.writeText(code).catch(() => {});
+  toast('CODE COPIED: ' + code);
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+</script>
+</body>
+</html>
